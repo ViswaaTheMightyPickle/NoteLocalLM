@@ -86,9 +86,7 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: studyapp_frontend
     ports:
-      - "8501:8501"
-    environment:
-      - BACKEND_URL=http://backend:8000
+      - "8080:80"
     depends_on:
       backend:
         condition: service_healthy
