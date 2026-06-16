@@ -22,13 +22,14 @@ Rules:
 - Output in {output_language}.
 - Do not fabricate information not present in the context."""
 
-QUIZ_USER = """Context excerpts:
+QUIZ_USER = """The context below is split into numbered excerpts ([Chunk 1], [Chunk 2], ...).
+
 {context}
 
 Generate {n} quiz questions.
 Topic focus: {topic}
 Difficulty: {difficulty}
-Quiz type: {quiz_type}
+{type_instruction}
 
 Output a JSON array where each item has EXACTLY these fields:
 {{
@@ -36,14 +37,19 @@ Output a JSON array where each item has EXACTLY these fields:
   "answer": "the correct answer",
   "options": ["option A", "option B", "option C", "option D"],
   "explanation": "why this answer is correct, citing the source material",
-  "quiz_type": "{quiz_type}",
+  "quiz_type": "one of: multiple_choice, true_false, short_answer, fill_blank, scenario, flashcard",
   "difficulty": "{difficulty}",
   "concept_tags": ["tag1", "tag2"],
-  "source_chunk_ids": []
+  "source_chunk_numbers": [1, 2]
 }}
 
-For true_false: options must be ["True", "False"].
-For short_answer or fill_blank: options can be [].
-For flashcard: question is the front, answer is the back.
+Rules per type:
+- multiple_choice / scenario: provide exactly 4 plausible options; "answer" must match one option exactly.
+- true_false: options must be ["True", "False"]; "answer" is "True" or "False".
+- short_answer / fill_blank: options must be []; "answer" is the expected text.
+- flashcard: question is the front, answer is the back; options must be [].
+
+"source_chunk_numbers" must list ONLY the chunk numbers you actually used for that
+specific question (e.g. [2] or [1, 3]). Do not list chunks you did not use.
 
 Return ONLY the JSON array, nothing else."""

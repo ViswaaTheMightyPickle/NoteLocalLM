@@ -1,0 +1,49 @@
+# Adds the containerised Ollama (CPU by default; NVIDIA via docker-compose.nvidia.yml).
+# Loaded on Linux/Windows. NOT used on macOS, which runs Ollama natively.
+#
+#   CPU:    docker compose -f docker-compose.yml -f docker-compose.ollama.yml up
+#   NVIDIA: docker compose -f docker-compose.yml -f docker-compose.ollama.yml -f docker-compose.nvidia.yml up
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: studyapp_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: studyapp_ollama_init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - STUDYAPP_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-q4_K_M}
+    # $$ escapes Compose interpolation so the container shell expands the env var
+    # at runtime (rather than Compose rendering it blank at config time).
+    entrypoint:
+      - sh
+      - -c
+      - |
+        echo "==> Pulling model: $$STUDYAPP_MODEL"
+        ollama pull "$$STUDYAPP_MODEL"
+        echo "==> Model pull complete"
+    restart: "no"
+
+  backend:
+    # Merged onto the base backend: also wait for Ollama when it is containerised.
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+volumes:
+  ollama_data:

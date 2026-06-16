@@ -49,14 +49,22 @@ def generate_quiz(
     )
     chunk_ids = [c["chunk_id"] for c in chunks]
 
+    if quiz_type == "mixed":
+        type_instruction = (
+            "Quiz type: mixed. Vary the type across questions using a blend of "
+            "multiple_choice, true_false, short_answer and fill_blank. Set each item's "
+            '"quiz_type" field to the type you chose for that question.'
+        )
+    else:
+        type_instruction = f'Quiz type: every question must be of type "{quiz_type}".'
+
     system = QUIZ_SYSTEM.format(output_language=output_language)
     user = QUIZ_USER.format(
         context=context,
         n=n,
         topic=topic or "general",
         difficulty=difficulty,
-        quiz_type=quiz_type,
-        output_language=output_language,
+        type_instruction=type_instruction,
     )
 
     raw = llm_client.chat(
@@ -86,7 +94,18 @@ def generate_quiz(
     saved = []
     for item in items:
         item_id = str(uuid.uuid4())
-        item["source_chunk_ids"] = chunk_ids
+
+        # Map the per-question chunk numbers the model reported back to real
+        # chunk IDs. Fall back to all retrieved chunks if it didn't specify.
+        item_chunk_ids = _resolve_chunk_ids(item.get("source_chunk_numbers"), chunk_ids)
+        item["source_chunk_ids"] = item_chunk_ids
+
+        # Normalise the per-item type (mixed lets the model pick per question).
+        item_type = item.get("quiz_type", quiz_type)
+        if item_type not in VALID_TYPES:
+            item_type = "multiple_choice" if quiz_type == "mixed" else quiz_type
+        item["quiz_type"] = item_type
+
         row = QuizItem(
             id=item_id,
             subject_id=subject_cfg.subject_id,
@@ -94,10 +113,10 @@ def generate_quiz(
             answer=item.get("answer", ""),
             options_json=json.dumps(item.get("options", [])),
             explanation=item.get("explanation", ""),
-            quiz_type=item.get("quiz_type", quiz_type),
+            quiz_type=item_type,
             difficulty=item.get("difficulty", difficulty),
             concept_tags_json=json.dumps(item.get("concept_tags", [])),
-            source_chunk_ids_json=json.dumps(chunk_ids),
+            source_chunk_ids_json=json.dumps(item_chunk_ids),
             output_language=output_language,
             created_at=datetime.utcnow(),
         )
@@ -107,6 +126,21 @@ def generate_quiz(
 
     db.commit()
     return saved
+
+
+def _resolve_chunk_ids(numbers, chunk_ids: list[str]) -> list[str]:
+    """Map 1-based chunk numbers from the model to actual chunk IDs."""
+    if not isinstance(numbers, list) or not numbers:
+        return chunk_ids
+    resolved = []
+    for num in numbers:
+        try:
+            idx = int(num) - 1
+        except (TypeError, ValueError):
+            continue
+        if 0 <= idx < len(chunk_ids) and chunk_ids[idx] not in resolved:
+            resolved.append(chunk_ids[idx])
+    return resolved or chunk_ids
 
 
 def _parse_quiz_json(text: str) -> list[dict]:

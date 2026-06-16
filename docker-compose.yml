@@ -1,36 +1,7 @@
+# Base stack: always-present services (vector DB, backend, frontend).
+# Ollama lives in docker-compose.ollama.yml so the macOS overlay (which uses a
+# native host Ollama) can omit it cleanly. Use ./start.sh to pick the right set.
 services:
-  ollama:
-    image: ollama/ollama:latest
-    container_name: studyapp_ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-
-  ollama-init:
-    image: ollama/ollama:latest
-    container_name: studyapp_ollama_init
-    depends_on:
-      ollama:
-        condition: service_healthy
-    environment:
-      - OLLAMA_HOST=http://ollama:11434
-      - STUDYAPP_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-q4_K_M}
-    entrypoint: >
-      sh -c "
-        echo '==> Pulling model: '\"$STUDYAPP_MODEL\" &&
-        ollama pull \"$STUDYAPP_MODEL\" &&
-        echo '==> Model pull complete'
-      "
-    restart: "no"
-
   qdrant:
     image: qdrant/qdrant:latest
     container_name: studyapp_qdrant
@@ -68,8 +39,6 @@ services:
     depends_on:
       qdrant:
         condition: service_healthy
-      ollama:
-        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -90,6 +59,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  ollama_data:
   qdrant_data:
   hf_cache:

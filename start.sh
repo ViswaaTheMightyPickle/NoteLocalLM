@@ -46,7 +46,7 @@ export STUDYAPP_MODEL
 
 # ── Platform detection ────────────────────────────────────────────────────────
 if [[ "$OS" == "Darwin" ]]; then
-  echo "==> macOS detected — using native Ollama on host"
+  echo "==> macOS detected — using native Ollama on host (Metal acceleration)"
   COMPOSE_FILES="$COMPOSE_FILES -f docker-compose.mac.yml"
 
   if ! command -v ollama &>/dev/null; then
@@ -68,12 +68,14 @@ if [[ "$OS" == "Darwin" ]]; then
     done
   fi
 
-  if ! ollama list 2>/dev/null | grep -qF "${STUDYAPP_MODEL%%:*}"; then
+  if ! ollama list 2>/dev/null | grep -qF "$STUDYAPP_MODEL"; then
     echo "==> Pulling $STUDYAPP_MODEL (this may take a while)…"
     OLLAMA_HOST=http://localhost:11434 ollama pull "$STUDYAPP_MODEL"
   fi
 
 else
+  # Linux/Windows: Ollama runs in a container.
+  COMPOSE_FILES="$COMPOSE_FILES -f docker-compose.ollama.yml"
   if command -v nvidia-smi &>/dev/null 2>&1; then
     echo "==> NVIDIA GPU detected — enabling GPU passthrough"
     COMPOSE_FILES="$COMPOSE_FILES -f docker-compose.nvidia.yml"

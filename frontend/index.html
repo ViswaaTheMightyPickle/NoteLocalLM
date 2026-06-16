@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StudyApp</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Fully local: no external fonts/CDNs. System font stacks keep the
+     serif-prose / sans-UI / mono distinction without any network calls.
+     To use the exact Spectral/Inter faces, drop the woff2 files in and add
+     @font-face here — the variables already list them as first preference. -->
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 input, textarea, select, button { -webkit-appearance: none; appearance: none; }
@@ -30,9 +31,9 @@ select { background-image: none; }
   --text-1:    #E4DDD0;
   --text-2:    #7A7468;
   --text-3:    #3E3C38;
-  --f-ui:      'Inter', system-ui, sans-serif;
-  --f-prose:   'Spectral', Georgia, serif;
-  --f-mono:    'JetBrains Mono', monospace;
+  --f-ui:      'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --f-prose:   'Spectral', Georgia, 'Times New Roman', serif;
+  --f-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --sidebar-w: 228px;
   --r:  6px;
   --r-lg: 10px;
@@ -852,8 +853,11 @@ function renderQuiz() {
     const diff = item.difficulty || 'medium';
     const qtype = item.quiz_type || 'multiple_choice';
     const opts = item.options || [];
-    const letters = ['A','B','C','D','E'];
-    const ansHtml = (['multiple_choice','true_false','scenario'].includes(qtype) && opts.length)
+    const letters = ['A','B','C','D','E','F'];
+    // Render choices whenever options exist and the type isn't free-text.
+    // This makes "mixed" quizzes work: each item carries its own type+options.
+    const freeText = ['short_answer','fill_blank','flashcard'].includes(qtype);
+    const ansHtml = (!freeText && opts.length)
       ? `<div class="options">${opts.map((o,j) => `<div class="option" data-val="${escA(o)}"><span class="option-letter">${letters[j]||j+1}</span><span class="option-text">${esc(o)}</span></div>`).join('')}</div>`
       : `<input class="text-answer" type="text" placeholder="Type your answer…">`;
     return `<div class="question-card" data-idx="${i}" data-id="${escA(item.id)}">

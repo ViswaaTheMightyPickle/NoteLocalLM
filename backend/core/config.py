@@ -1,11 +1,12 @@
 import os
-import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
 import yaml
 from pydantic import BaseModel
+
+from backend.core.text_utils import slugify  # re-exported for callers
 
 # ── Model catalogue ───────────────────────────────────────────────────────────
 MODEL_TIERS = {
@@ -121,13 +122,6 @@ def get_subject_config(subject_id: str) -> Optional[SubjectConfig]:
         if cfg.subject_id == subject_id:
             return cfg
     return None
-
-
-def slugify(text: str) -> str:
-    text = text.lower().strip()
-    text = re.sub(r"[^\w\s-]", "", text)
-    text = re.sub(r"[\s-]+", "_", text)
-    return text[:64]
 
 
 def create_subject_on_disk(

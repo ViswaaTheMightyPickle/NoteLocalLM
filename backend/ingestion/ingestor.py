@@ -12,7 +12,9 @@ from backend.ingestion.csv_parser import parse_csv
 from backend.ingestion.txt_parser import parse_txt
 from backend.ingestion.chunker import chunk_text
 from backend.retrieval.embedder import get_embedder
-from backend.retrieval.retriever import get_qdrant_client, ensure_collection
+from backend.retrieval.retriever import (
+    get_qdrant_client, ensure_collection, delete_document_points,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +39,8 @@ def ingest_subject(subject_cfg: SubjectConfig, db: Session) -> dict:
         db.commit()
 
     qdrant = get_qdrant_client()
-    ensure_collection(qdrant, subject_cfg.vector_collection)
     embedder = get_embedder(subject_cfg.embedding_model)
+    ensure_collection(qdrant, subject_cfg.vector_collection, vector_size=embedder.dim())
 
     files = [f for f in input_dir.iterdir() if f.suffix.lower() in _SUPPORTED]
     if not files:
@@ -51,7 +53,7 @@ def ingest_subject(subject_cfg: SubjectConfig, db: Session) -> dict:
         parser = _SUPPORTED[file_path.suffix.lower()]
         logger.info(f"[ingestor] Parsing {file_path.name}")
 
-        # Remove old document + chunks for this file
+        # Remove old document + chunks for this file (SQL and vector store)
         old_doc = (
             db.query(Document)
             .filter_by(subject_id=subject_cfg.subject_id, filename=file_path.name)
@@ -60,6 +62,11 @@ def ingest_subject(subject_cfg: SubjectConfig, db: Session) -> dict:
         if old_doc:
             db.delete(old_doc)
             db.commit()
+        # Always purge any prior vectors for this file so re-indexing is clean,
+        # even if the SQL row was lost or this is a content change.
+        delete_document_points(
+            qdrant, subject_cfg.vector_collection, subject_cfg.subject_id, file_path.name
+        )
 
         doc_row = Document(
             subject_id=subject_cfg.subject_id,

@@ -13,8 +13,9 @@ from backend.core.config import (
     list_subject_configs,
     slugify,
 )
-from backend.core.database import get_db
+from backend.core.database import get_db, SessionLocal
 from backend.core.models import Document
+from backend.core.text_utils import safe_filename
 from backend.ingestion.ingestor import ingest_subject
 
 router = APIRouter(prefix="/subjects", tags=["subjects"])
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 _ingest_status: dict[str, dict] = {}
 
 _ALLOWED_EXTENSIONS = {".pdf", ".csv", ".txt", ".md"}
+_MAX_UPLOAD_BYTES = 100 * 1024 * 1024  # 100 MB per file
 
 
 # ── Models catalogue (must be before /{subject_id} routes) ───────────────────
@@ -96,23 +98,34 @@ async def upload_files(subject_id: str, files: list[UploadFile] = File(...)):
     if not cfg:
         raise HTTPException(status_code=404, detail=f"Subject '{subject_id}' not found")
 
-    raw_dir = Path(cfg.input_folder)
+    raw_dir = Path(cfg.input_folder).resolve()
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     saved, errors = [], []
     for f in files:
-        suffix = Path(f.filename).suffix.lower()
+        original = f.filename or "file"
+        safe_name = safe_filename(original)
+        suffix = Path(safe_name).suffix.lower()
         if suffix not in _ALLOWED_EXTENSIONS:
-            errors.append(f"{f.filename}: unsupported type (use PDF, CSV, TXT, MD)")
+            errors.append(f"{original}: unsupported type (use PDF, CSV, TXT, MD)")
             continue
-        dest = raw_dir / f.filename
+
+        content = await f.read()
+        if len(content) > _MAX_UPLOAD_BYTES:
+            errors.append(f"{original}: too large (max {_MAX_UPLOAD_BYTES // (1024 * 1024)} MB)")
+            continue
+
+        dest = (raw_dir / safe_name).resolve()
+        # Defence in depth: never write outside the subject's raw folder.
+        if raw_dir not in dest.parents:
+            errors.append(f"{original}: rejected unsafe filename")
+            continue
         try:
-            content = await f.read()
             dest.write_bytes(content)
-            saved.append(f.filename)
-            logger.info(f"[upload] Saved {f.filename} → {dest}")
+            saved.append(safe_name)
+            logger.info(f"[upload] Saved {original} -> {dest}")
         except Exception as e:
-            errors.append(f"{f.filename}: {e}")
+            errors.append(f"{original}: {e}")
 
     return {"saved": saved, "errors": errors}
 
@@ -176,7 +189,7 @@ def delete_subject(subject_id: str, db: Session = Depends(get_db)):
 
 # ── Ingest ────────────────────────────────────────────────────────────────────
 @router.post("/{subject_id}/ingest")
-def ingest(subject_id: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+def ingest(subject_id: str, background_tasks: BackgroundTasks):
     cfg = get_subject_config(subject_id)
     if not cfg:
         raise HTTPException(status_code=404, detail=f"Subject '{subject_id}' not found")
@@ -184,12 +197,17 @@ def ingest(subject_id: str, background_tasks: BackgroundTasks, db: Session = Dep
     _ingest_status[subject_id] = {"status": "running"}
 
     def run():
+        # Use a dedicated session — the request-scoped one is closed once this
+        # endpoint returns, so it must not be reused in the background task.
+        task_db = SessionLocal()
         try:
-            result = ingest_subject(cfg, db)
+            result = ingest_subject(cfg, task_db)
             _ingest_status[subject_id] = {"status": "done", **result}
         except Exception as e:
             logger.exception(f"[ingest] Failed for {subject_id}")
             _ingest_status[subject_id] = {"status": "error", "error": str(e)}
+        finally:
+            task_db.close()
 
     background_tasks.add_task(run)
     return {"status": "started", "subject_id": subject_id}

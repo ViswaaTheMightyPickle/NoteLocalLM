@@ -21,6 +21,10 @@ class Embedder:
     def embed_one(self, text: str) -> list[float]:
         return self.embed([text])[0]
 
+    def dim(self) -> int:
+        size = self._model.get_sentence_embedding_dimension()
+        return int(size) if size else len(self.embed_one("dimension probe"))
+
 
 @lru_cache(maxsize=4)
 def get_embedder(model_name: str = _DEFAULT_MODEL) -> Embedder:

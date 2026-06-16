@@ -1,6 +1,7 @@
-# Overlay for Windows/Linux machines with an NVIDIA GPU.
-# Usage: docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up
-# Or: ./start.sh  (auto-detected on non-Mac systems with nvidia-smi)
+# Overlay adding NVIDIA GPU passthrough to the containerised Ollama.
+# Must be layered on top of docker-compose.ollama.yml (which defines `ollama`):
+#   docker compose -f docker-compose.yml -f docker-compose.ollama.yml -f docker-compose.nvidia.yml up
+# ./start.sh applies this automatically when nvidia-smi is present.
 services:
   ollama:
     deploy:

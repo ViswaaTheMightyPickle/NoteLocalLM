@@ -125,16 +125,26 @@ All services run via `docker compose`. Data persists in Docker volumes and `./da
 
 ## Manual Docker Commands
 
+The Compose stack is split so each platform loads only what it needs:
+
+- `docker-compose.yml` — base (Qdrant, backend, frontend)
+- `docker-compose.ollama.yml` — containerised Ollama + model pull (Linux/Windows)
+- `docker-compose.nvidia.yml` — adds NVIDIA GPU to Ollama
+- `docker-compose.mac.yml` — points the backend at native host Ollama (macOS)
+
 ```bash
 # Windows/Linux with NVIDIA GPU
-docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up --build
+docker compose -f docker-compose.yml -f docker-compose.ollama.yml -f docker-compose.nvidia.yml up --build
+
+# Linux/Windows CPU-only
+docker compose -f docker-compose.yml -f docker-compose.ollama.yml up --build
 
 # macOS (after: brew install ollama && ollama serve)
 docker compose -f docker-compose.yml -f docker-compose.mac.yml up --build
-
-# CPU-only fallback
-docker compose up --build
 ```
+
+The model to pull/use is controlled by the `STUDYAPP_MODEL` variable (set once in
+`.env` by `start.sh`, e.g. `STUDYAPP_MODEL=mistral-nemo:12b-instruct-q4_K_M`).
 
 ---
 
@@ -147,5 +157,11 @@ pip install -r requirements.txt
 QDRANT_URL=http://localhost:6333 OLLAMA_URL=http://localhost:11434 DATA_DIR=./data SQLITE_PATH=./data/app.db \
   uvicorn backend.main:app --reload --port 8000
 
-# Frontend: open frontend/index.html in a browser (no build step needed)
+# Frontend: open frontend/index.html in a browser (no build step, no CDN — fully local)
+```
+
+Run the unit tests (no heavy deps required for these):
+
+```bash
+python -m pytest tests/
 ```

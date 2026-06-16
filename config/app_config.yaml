@@ -3,8 +3,8 @@ ollama_url: http://ollama:11434
 sqlite_path: /data/app.db
 data_dir: /data
 default_embedding_model: paraphrase-multilingual-mpnet-base-v2
-default_chat_model: mistral-nemo:12b
-default_quiz_model: mistral-nemo:12b
+default_chat_model: mistral-nemo:12b-instruct-q4_K_M
+default_quiz_model: mistral-nemo:12b-instruct-q4_K_M
 backend_host: 0.0.0.0
 backend_port: 8000
 retrieval_top_k: 5

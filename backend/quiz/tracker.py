@@ -5,6 +5,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from backend.core.models import QuizAttempt, QuizItem
+from backend.core.text_utils import answer_matches
 
 
 def record_attempt(item_id: str, user_answer: str, db: Session) -> dict:
@@ -12,8 +13,8 @@ def record_attempt(item_id: str, user_answer: str, db: Session) -> dict:
     if not item:
         return {"error": "Item not found"}
 
-    correct_answer = item.answer.strip().lower()
-    is_correct = user_answer.strip().lower() == correct_answer
+    options = json.loads(item.options_json or "[]")
+    is_correct = answer_matches(user_answer, item.answer, options)
 
     attempt = QuizAttempt(
         item_id=item_id,
