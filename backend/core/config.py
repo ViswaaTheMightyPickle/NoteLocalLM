@@ -1,4 +1,5 @@
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
@@ -110,7 +111,10 @@ def list_subject_configs() -> list[SubjectConfig]:
                 continue
             cfg = SubjectConfig(**data, config_path=str(config_file))
             if not Path(cfg.input_folder).is_absolute():
-                cfg.input_folder = str(get_data_dir() / cfg.input_folder.lstrip("data/"))
+                # Strip the literal "data/" prefix (not a character set) before
+                # re-rooting under the configured data_dir.
+                rel = cfg.input_folder.removeprefix("data/").lstrip("/")
+                cfg.input_folder = str(get_data_dir() / rel)
             configs.append(cfg)
         except Exception as e:
             print(f"[config] Failed to load {config_file}: {e}")
@@ -132,8 +136,16 @@ def create_subject_on_disk(
     chat_model: str = DEFAULT_MODEL,
     quiz_model: str = DEFAULT_MODEL,
 ) -> SubjectConfig:
+    # Defence in depth: subject_id must be a single safe path component.
+    if not re.fullmatch(r"[A-Za-z0-9_]+", subject_id or ""):
+        raise ValueError(f"Unsafe subject_id: {subject_id!r}")
+
     data_dir = get_data_dir()
-    subject_dir = data_dir / "subjects" / subject_id
+    subjects_root = (data_dir / "subjects").resolve()
+    subject_dir = (subjects_root / subject_id).resolve()
+    if subject_dir.parent != subjects_root:
+        raise ValueError(f"subject_id escapes subjects directory: {subject_id!r}")
+
     raw_dir = subject_dir / "raw"
     processed_dir = subject_dir / "processed"
     raw_dir.mkdir(parents=True, exist_ok=True)

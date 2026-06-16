@@ -623,12 +623,15 @@ async function loadSubjects(autoSelectId) {
       <div class="subject-dot"></div>
       <span>${esc(s.display_name)}</span>
     </div>`).join('');
-  list.querySelectorAll('.subject-item').forEach(el => {
+  const items = [...list.querySelectorAll('.subject-item')];
+  items.forEach(el => {
     el.addEventListener('click', () => selectSubject(el.dataset.id, el.dataset.name, el.dataset.folder));
   });
-  const target = autoSelectId
-    ? list.querySelector(`.subject-item[data-id="${autoSelectId}"]`)
-    : (!currentSubject ? list.querySelector('.subject-item') : list.querySelector(`.subject-item[data-id="${currentSubject}"]`));
+  // Match on dataset rather than building a CSS selector from an arbitrary id
+  // (ids from manually-edited configs may contain selector metacharacters).
+  const byId = id => items.find(el => el.dataset.id === id);
+  const target = autoSelectId ? byId(autoSelectId)
+    : (!currentSubject ? items[0] : byId(currentSubject));
   if (target) target.click();
 }
 
@@ -998,7 +1001,7 @@ function startIngestPoll() {
     el.className = `ingest-status visible ${s}`;
     if (s === 'running') { el.innerHTML = `<span class="spinner"></span> Indexing…`; }
     else if (s === 'done') {
-      el.innerHTML = `✓ Indexed ${data.total_chunks||0} chunks from ${(data.files_processed||[]).length} file(s).`;
+      el.innerHTML = `✓ Indexed ${data.total_chunks||0} chunks from ${(data.files_processed||[]).length} file(s).${skipNote(data)}`;
       clearInterval(ingestPollTimer);
       loadDocsList();
     } else if (s === 'error') { el.innerHTML = `Error: ${data.error||'Unknown'}`; clearInterval(ingestPollTimer); }
@@ -1011,9 +1014,14 @@ async function loadDocsPage() {
   if (data?.status === 'done') {
     const el = document.getElementById('ingest-status');
     el.className = 'ingest-status visible done';
-    el.innerHTML = `✓ Last index: ${data.total_chunks||0} chunks from ${(data.files_processed||[]).length} file(s).`;
+    el.innerHTML = `✓ Last index: ${data.total_chunks||0} chunks from ${(data.files_processed||[]).length} file(s).${skipNote(data)}`;
   }
   loadDocsList();
+}
+
+function skipNote(data) {
+  const n = (data.files_skipped || []).length;
+  return n ? ` <span style="color:var(--text-3)">· ${n} skipped (no extractable text)</span>` : '';
 }
 
 async function loadDocsList() {

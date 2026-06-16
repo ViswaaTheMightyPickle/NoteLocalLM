@@ -48,6 +48,7 @@ def ingest_subject(subject_cfg: SubjectConfig, db: Session) -> dict:
 
     total_chunks = 0
     processed_files = []
+    skipped_files = []
 
     for file_path in files:
         parser = _SUPPORTED[file_path.suffix.lower()]
@@ -68,6 +69,29 @@ def ingest_subject(subject_cfg: SubjectConfig, db: Session) -> dict:
             qdrant, subject_cfg.vector_collection, subject_cfg.subject_id, file_path.name
         )
 
+        # Parse and chunk BEFORE recording the document, so a file that yields no
+        # text isn't falsely shown as "indexed".
+        raw_chunks = []
+        try:
+            for page_dict in parser(file_path, subject_cfg.subject_id):
+                raw_chunks.extend(
+                    chunk_text(
+                        page_dict["text"],
+                        page_dict["metadata"],
+                        target_tokens=cfg.chunk_target_tokens,
+                        overlap_tokens=cfg.chunk_overlap_tokens,
+                    )
+                )
+        except Exception as e:
+            logger.warning(f"[ingestor] Failed to parse {file_path.name}: {e}")
+            skipped_files.append(file_path.name)
+            continue
+
+        if not raw_chunks:
+            logger.info(f"[ingestor] {file_path.name}: no extractable text — skipped")
+            skipped_files.append(file_path.name)
+            continue
+
         doc_row = Document(
             subject_id=subject_cfg.subject_id,
             filename=file_path.name,
@@ -77,20 +101,6 @@ def ingest_subject(subject_cfg: SubjectConfig, db: Session) -> dict:
         db.add(doc_row)
         db.commit()
         db.refresh(doc_row)
-
-        raw_chunks = []
-        for page_dict in parser(file_path, subject_cfg.subject_id):
-            raw_chunks.extend(
-                chunk_text(
-                    page_dict["text"],
-                    page_dict["metadata"],
-                    target_tokens=cfg.chunk_target_tokens,
-                    overlap_tokens=cfg.chunk_overlap_tokens,
-                )
-            )
-
-        if not raw_chunks:
-            continue
 
         # Embed in batches
         texts = [c["text"] for c in raw_chunks]
@@ -133,5 +143,6 @@ def ingest_subject(subject_cfg: SubjectConfig, db: Session) -> dict:
         "status": "ok",
         "subject_id": subject_cfg.subject_id,
         "files_processed": processed_files,
+        "files_skipped": skipped_files,
         "total_chunks": total_chunks,
     }

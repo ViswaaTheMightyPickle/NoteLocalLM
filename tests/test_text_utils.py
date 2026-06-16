@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from backend.core.text_utils import (  # noqa: E402
-    slugify, safe_filename, normalize_answer, answer_matches,
+    slugify, ascii_slug, make_subject_id, safe_filename, normalize_answer, answer_matches,
 )
 
 
@@ -23,6 +23,34 @@ def test_slugify_basic():
 
 def test_slugify_length_cap():
     assert len(slugify("x" * 200)) <= 64
+
+
+# ── subject id generation (ASCII-safe + multilingual fallback) ────────────────
+def test_make_subject_id_ascii():
+    assert make_subject_id("Organic Chemistry") == "organic_chemistry"
+    assert make_subject_id("Résumé Studies") == "resume_studies"  # accents folded
+
+
+def test_make_subject_id_is_path_safe():
+    for name in ["../../etc", "a/b/c", "..", "weird:*name"]:
+        sid = make_subject_id(name)
+        import re as _re
+        assert _re.fullmatch(r"[A-Za-z0-9_]+", sid), sid
+
+
+def test_make_subject_id_non_latin_fallback():
+    # Purely non-Latin names have no ASCII slug → deterministic hash fallback.
+    sid = make_subject_id("历史")
+    assert sid.startswith("subject_")
+    import re as _re
+    assert _re.fullmatch(r"[A-Za-z0-9_]+", sid)
+    # Deterministic: same input → same id.
+    assert make_subject_id("历史") == sid
+
+
+def test_ascii_slug_empty():
+    assert ascii_slug("历史") == ""
+    assert ascii_slug("") == ""
 
 
 # ── safe_filename (path traversal defence) ────────────────────────────────────

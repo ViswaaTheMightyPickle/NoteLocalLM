@@ -39,6 +39,13 @@ def ensure_collection(client: QdrantClient, collection_name: str, vector_size: i
         logger.info(f"[retriever] Created collection {collection_name} (dim={vector_size})")
 
 
+def drop_collection(client: QdrantClient, collection_name: str):
+    """Remove an entire collection (used when a subject is deleted)."""
+    if collection_exists(client, collection_name):
+        client.delete_collection(collection_name)
+        logger.info(f"[retriever] Dropped collection {collection_name}")
+
+
 def delete_document_points(client: QdrantClient, collection_name: str, subject_id: str, source_file: str):
     """Remove all vectors for a given source file so re-indexing leaves no stale data."""
     if not collection_exists(client, collection_name):

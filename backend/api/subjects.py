@@ -11,11 +11,10 @@ from backend.core.config import (
     create_subject_on_disk,
     get_subject_config,
     list_subject_configs,
-    slugify,
 )
 from backend.core.database import get_db, SessionLocal
 from backend.core.models import Document
-from backend.core.text_utils import safe_filename
+from backend.core.text_utils import safe_filename, make_subject_id
 from backend.ingestion.ingestor import ingest_subject
 
 router = APIRouter(prefix="/subjects", tags=["subjects"])
@@ -64,9 +63,11 @@ class CreateSubjectRequest(BaseModel):
 def create_subject(req: CreateSubjectRequest):
     from backend.core.config import DEFAULT_MODEL
 
-    subject_id = req.subject_id.strip() or slugify(req.display_name)
+    # Always derive an ASCII-safe single-path-component id (handles non-Latin
+    # names via a hash fallback), whether supplied explicitly or from the name.
+    subject_id = make_subject_id(req.subject_id.strip() or req.display_name)
     if not subject_id:
-        raise HTTPException(status_code=422, detail="Could not derive a subject ID from the display name.")
+        raise HTTPException(status_code=422, detail="Could not derive a valid subject ID from the input.")
 
     if get_subject_config(subject_id):
         raise HTTPException(status_code=409, detail=f"Subject '{subject_id}' already exists.")
@@ -172,6 +173,14 @@ def delete_subject(subject_id: str, db: Session = Depends(get_db)):
     cfg = get_subject_config(subject_id)
     if not cfg:
         raise HTTPException(status_code=404, detail=f"Subject '{subject_id}' not found")
+
+    # Drop the vector collection so a later subject reusing this id can't surface
+    # the deleted content (retrieval filters by subject_id, which would match).
+    from backend.retrieval.retriever import get_qdrant_client, drop_collection
+    try:
+        drop_collection(get_qdrant_client(), cfg.vector_collection)
+    except Exception as e:
+        logger.warning(f"[delete] Could not drop collection {cfg.vector_collection}: {e}")
 
     from backend.core.config import get_data_dir
     subject_dir = get_data_dir() / "subjects" / subject_id

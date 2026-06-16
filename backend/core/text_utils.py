@@ -3,6 +3,7 @@
 Kept import-clean so it is unit-testable without pydantic / sqlalchemy /
 tiktoken installed.
 """
+import hashlib
 import re
 import unicodedata
 
@@ -12,6 +13,27 @@ def slugify(text: str) -> str:
     text = re.sub(r"[^\w\s-]", "", text, flags=re.UNICODE)
     text = re.sub(r"[\s-]+", "_", text)
     return text.strip("_")[:64]
+
+
+def ascii_slug(text: str) -> str:
+    """ASCII-only slug: transliterate accents, drop everything non-[a-z0-9_]."""
+    text = unicodedata.normalize("NFKD", text or "")
+    text = text.encode("ascii", "ignore").decode("ascii").lower().strip()
+    text = re.sub(r"[^a-z0-9]+", "_", text)
+    return text.strip("_")[:48]
+
+
+def make_subject_id(text: str) -> str:
+    """Return a filesystem- and collection-safe id, never empty.
+
+    Falls back to a deterministic hash when the input has no ASCII letters
+    (e.g. a purely non-Latin subject name), so multilingual names still work.
+    """
+    s = ascii_slug(text)
+    if s:
+        return s
+    digest = hashlib.md5((text or "").encode("utf-8")).hexdigest()[:8]
+    return f"subject_{digest}"
 
 
 # ── Upload filename safety ────────────────────────────────────────────────────

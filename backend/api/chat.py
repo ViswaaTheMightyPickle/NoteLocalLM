@@ -32,14 +32,18 @@ def chat(req: ChatRequest, db: Session = Depends(get_db)):
 
     app_cfg = get_app_config()
 
-    # Resolve or create session
+    # Resolve or create session. A supplied id must exist AND belong to this
+    # subject; otherwise we start a fresh session rather than risk FK errors or
+    # mixing history across subjects.
     session_id = req.session_id
-    if not session_id:
+    session = (
+        db.query(ChatSession).filter_by(id=session_id).first() if session_id else None
+    )
+    if not session or session.subject_id != req.subject_id:
         session_id = str(uuid.uuid4())
-        session_row = ChatSession(
+        db.add(ChatSession(
             id=session_id, subject_id=req.subject_id, created_at=datetime.utcnow()
-        )
-        db.add(session_row)
+        ))
         db.commit()
 
     embedder = get_embedder(cfg.embedding_model)
