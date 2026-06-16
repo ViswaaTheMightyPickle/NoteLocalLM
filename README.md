@@ -75,8 +75,8 @@ source_language: auto        # auto-detect per chunk, or specify e.g. "fr"
 output_language: en
 input_folder: data/subjects/my_subject/raw
 vector_collection: subject_my_subject
-chat_model: mistral-nemo:12b-instruct-q4_K_M
-quiz_model: mistral-nemo:12b-instruct-q4_K_M
+chat_model: mistral-nemo:12b-instruct-2407-q4_K_M
+quiz_model: mistral-nemo:12b-instruct-2407-q4_K_M
 embedding_model: paraphrase-multilingual-mpnet-base-v2
 ```
 
@@ -144,7 +144,7 @@ docker compose -f docker-compose.yml -f docker-compose.mac.yml up --build
 ```
 
 The model to pull/use is controlled by the `STUDYAPP_MODEL` variable (set once in
-`.env` by `start.sh`, e.g. `STUDYAPP_MODEL=mistral-nemo:12b-instruct-q4_K_M`).
+`.env` by `start.sh`, e.g. `STUDYAPP_MODEL=mistral-nemo:12b-instruct-2407-q4_K_M`).
 
 ---
 

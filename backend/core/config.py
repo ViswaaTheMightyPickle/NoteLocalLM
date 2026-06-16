@@ -20,7 +20,7 @@ MODEL_TIERS = {
     "balanced": {
         "tier": "balanced",
         "label": "Balanced · Mistral Nemo 12B (4-bit)",
-        "model": "mistral-nemo:12b-instruct-q4_K_M",
+        "model": "mistral-nemo:12b-instruct-2407-q4_K_M",
         "description": "~7.1 GB — 4-bit quantised, good quality (recommended)",
     },
     "powerful": {

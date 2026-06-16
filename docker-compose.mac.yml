@@ -6,7 +6,7 @@
 # Before first run (handled automatically by ./start.sh):
 #   brew install ollama
 #   ollama serve
-#   ollama pull mistral-nemo:12b-instruct-q4_K_M
+#   ollama pull mistral-nemo:12b-instruct-2407-q4_K_M
 #
 # Then: docker compose -f docker-compose.yml -f docker-compose.mac.yml up
 # Or:   ./start.sh   (auto-detected on macOS)

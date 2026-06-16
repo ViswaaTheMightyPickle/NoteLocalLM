@@ -34,7 +34,7 @@ else
   case "$CHOICE" in
     1) STUDYAPP_MODEL="llama3.1:8b" ;;
     3) STUDYAPP_MODEL="qwen2.5:14b" ;;
-    *) STUDYAPP_MODEL="mistral-nemo:12b-instruct-q4_K_M" ;;
+    *) STUDYAPP_MODEL="mistral-nemo:12b-instruct-2407-q4_K_M" ;;
   esac
 
   echo "STUDYAPP_MODEL=$STUDYAPP_MODEL" >> "$ENV_FILE"

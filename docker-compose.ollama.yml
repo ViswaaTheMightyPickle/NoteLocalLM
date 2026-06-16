@@ -27,7 +27,7 @@ services:
         condition: service_healthy
     environment:
       - OLLAMA_HOST=http://ollama:11434
-      - STUDYAPP_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-q4_K_M}
+      - STUDYAPP_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-2407-q4_K_M}
     # $$ escapes Compose interpolation so the container shell expands the env var
     # at runtime (rather than Compose rendering it blank at config time).
     entrypoint:
