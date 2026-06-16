@@ -11,6 +11,11 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    environment:
+      # Reserve VRAM headroom so Ollama offloads partially instead of OOMing.
+      # Needed on Docker Desktop/WSL2 where nvidia-smi over-reports free VRAM.
+      # Default 0 = no reservation (unaffected on Linux/large GPUs); set in .env.
+      - OLLAMA_GPU_OVERHEAD=${OLLAMA_GPU_OVERHEAD:-0}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]

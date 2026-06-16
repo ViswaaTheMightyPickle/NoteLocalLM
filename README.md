@@ -42,6 +42,15 @@ Docker Desktop + NVIDIA Container Toolkit required.
 ./start.sh   # auto-detects GPU
 ```
 
+**8 GB VRAM (e.g. RTX 4060 Laptop):** Docker Desktop / WSL2 under-reports available VRAM to CUDA, causing OOM even when `nvidia-smi` shows enough free memory. Set `OLLAMA_GPU_OVERHEAD` in your `.env` to reserve headroom and choose the Fast tier:
+
+```
+STUDYAPP_MODEL=llama3.1:8b
+OLLAMA_GPU_OVERHEAD=2147483648
+```
+
+`llama3.1:8b` (~4.9 GB) then loads 100% on GPU and runs at full speed.
+
 ### macOS (Apple Silicon or Intel)
 Ollama runs natively on Mac using Metal GPU acceleration. Docker is used only for the backend and vector DB.
 
