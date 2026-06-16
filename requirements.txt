@@ -11,3 +11,4 @@ pyyaml==6.0.2
 langdetect==1.0.9
 tiktoken==0.8.0
 requests==2.32.3
+python-multipart==0.0.12

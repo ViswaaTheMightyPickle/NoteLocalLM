@@ -9,1015 +9,300 @@
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* Safari / iOS resets */
-input, textarea, select, button {
-  -webkit-appearance: none;
-  appearance: none;
-}
+input, textarea, select, button { -webkit-appearance: none; appearance: none; }
 textarea { resize: none; }
 select { background-image: none; }
 
 :root {
-  --bg:           #0E1018;
-  --surface:      #161924;
-  --surface-2:    #1C2030;
-  --surface-h:    #1F2438;
-  --border:       #252A3C;
-  --border-2:     #2E3450;
-
-  --gold:         #C8A84B;
-  --gold-dim:     rgba(200,168,75,0.12);
-  --gold-glow:    rgba(200,168,75,0.06);
-  --teal:         #3A9B7F;
-  --teal-dim:     rgba(58,155,127,0.12);
-  --rust:         #C4583E;
-  --rust-dim:     rgba(196,88,62,0.12);
-
-  --text-1:       #E4DDD0;
-  --text-2:       #7A7468;
-  --text-3:       #3E3C38;
-
-  --f-ui:         'Inter', system-ui, sans-serif;
-  --f-prose:      'Spectral', Georgia, serif;
-  --f-mono:       'JetBrains Mono', monospace;
-
-  --sidebar-w:    228px;
-  --r:            6px;
-  --r-lg:         10px;
+  --bg:        #0E1018;
+  --surface:   #161924;
+  --surface-2: #1C2030;
+  --surface-h: #1F2438;
+  --border:    #252A3C;
+  --border-2:  #2E3450;
+  --gold:      #C8A84B;
+  --gold-dim:  rgba(200,168,75,0.12);
+  --gold-glow: rgba(200,168,75,0.06);
+  --teal:      #3A9B7F;
+  --teal-dim:  rgba(58,155,127,0.12);
+  --rust:      #C4583E;
+  --rust-dim:  rgba(196,88,62,0.12);
+  --text-1:    #E4DDD0;
+  --text-2:    #7A7468;
+  --text-3:    #3E3C38;
+  --f-ui:      'Inter', system-ui, sans-serif;
+  --f-prose:   'Spectral', Georgia, serif;
+  --f-mono:    'JetBrains Mono', monospace;
+  --sidebar-w: 228px;
+  --r:  6px;
+  --r-lg: 10px;
 }
 
-html, body {
-  height: 100%;
-  background: var(--bg);
-  color: var(--text-1);
-  font-family: var(--f-ui);
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+html, body { height: 100%; background: var(--bg); color: var(--text-1); font-family: var(--f-ui); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
-/* ── Layout ───────────────────────────────── */
-.layout {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
+/* ── Layout ─────────────────────────────────────────────── */
+.layout { display: flex; height: 100vh; overflow: hidden; }
 
-/* ── Sidebar ──────────────────────────────── */
-.sidebar {
-  width: var(--sidebar-w);
-  flex-shrink: 0;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+/* ── Sidebar ────────────────────────────────────────────── */
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
 
-.sidebar-logo {
-  padding: 20px 18px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.sidebar-logo-mark {
-  width: 28px; height: 28px;
-  background: var(--gold-dim);
-  border: 1px solid var(--gold);
-  border-radius: 5px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--gold);
-  font-size: 13px;
-  font-weight: 600;
-  font-family: var(--f-prose);
-  letter-spacing: -0.5px;
-  flex-shrink: 0;
-}
-.sidebar-logo-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-1);
-  letter-spacing: 0.01em;
-}
+.sidebar-logo { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.sidebar-logo-mark { width: 28px; height: 28px; background: var(--gold-dim); border: 1px solid var(--gold); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 13px; font-weight: 600; font-family: var(--f-prose); flex-shrink: 0; }
+.sidebar-logo-text { font-size: 13px; font-weight: 600; color: var(--text-1); }
 
-.sidebar-section {
-  padding: 14px 12px 6px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
+.sidebar-section-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 12px 6px 12px; }
+.sidebar-section { font-size: 10px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-3); }
+.add-subject-btn { width: 20px; height: 20px; border: 1px solid var(--border-2); border-radius: 4px; background: none; cursor: pointer; color: var(--text-2); font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: border-color 0.12s, color 0.12s; }
+.add-subject-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-.subject-list {
-  padding: 0 8px;
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-}
-
-.subject-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: var(--r);
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--text-2);
-  transition: background 0.12s, color 0.12s;
-  border-left: 2px solid transparent;
-  margin-bottom: 1px;
-  position: relative;
-}
-.subject-item:hover {
-  background: var(--surface-h);
-  color: var(--text-1);
-}
-.subject-item.active {
-  background: var(--gold-dim);
-  color: var(--text-1);
-  border-left-color: var(--gold);
-}
-.subject-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--text-3);
-  flex-shrink: 0;
-}
+.subject-list { padding: 0 8px; overflow-y: auto; flex: 1; min-height: 0; }
+.subject-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: var(--r); cursor: pointer; font-size: 13px; color: var(--text-2); transition: background 0.12s, color 0.12s; border-left: 2px solid transparent; margin-bottom: 1px; }
+.subject-item:hover { background: var(--surface-h); color: var(--text-1); }
+.subject-item.active { background: var(--gold-dim); color: var(--text-1); border-left-color: var(--gold); }
+.subject-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
 .subject-item.active .subject-dot { background: var(--gold); }
 
-.sidebar-nav {
-  border-top: 1px solid var(--border);
-  padding: 8px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 8px 10px;
-  border-radius: var(--r);
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--text-2);
-  transition: background 0.12s, color 0.12s;
-  margin-bottom: 1px;
-}
+.sidebar-nav { border-top: 1px solid var(--border); padding: 8px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--r); cursor: pointer; font-size: 13px; color: var(--text-2); transition: background 0.12s, color 0.12s; margin-bottom: 1px; }
 .nav-item:hover { background: var(--surface-h); color: var(--text-1); }
 .nav-item.active { background: var(--surface-2); color: var(--text-1); }
 .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
 
-/* ── Main ─────────────────────────────────── */
-.main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+/* ── Main ───────────────────────────────────────────────── */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { height: 48px; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 12px; flex-shrink: 0; background: var(--surface); }
+.topbar-subject { font-size: 13px; color: var(--text-2); }
+.topbar-divider { width: 1px; height: 14px; background: var(--border-2); }
+.topbar-page { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 
-.topbar {
-  height: 48px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  gap: 12px;
-  flex-shrink: 0;
-  background: var(--surface);
-}
-.topbar-subject {
-  font-size: 13px;
-  color: var(--text-2);
-}
-.topbar-divider {
-  width: 1px; height: 14px;
-  background: var(--border-2);
-}
-.topbar-page {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-1);
-}
-.topbar-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.topbar-badge {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: var(--gold-dim);
-  color: var(--gold);
-  font-weight: 500;
-  border: 1px solid rgba(200,168,75,0.2);
-}
-
-.page {
-  display: none;
-  flex: 1;
-  overflow: hidden;
-  flex-direction: column;
-}
+.page { display: none; flex: 1; overflow: hidden; flex-direction: column; }
 .page.active { display: flex; }
 
-/* ── Chat page ────────────────────────────── */
-#page-chat {
-  align-items: stretch;
-}
+/* ── Chat ───────────────────────────────────────────────── */
+.chat-scroll { flex: 1; overflow-y: auto; padding: 32px 24px; scroll-behavior: smooth; }
+.chat-inner { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.chat-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; text-align: center; gap: 14px; color: var(--text-2); }
+.chat-empty-glyph { font-family: var(--f-prose); font-size: 48px; color: var(--text-3); }
+.chat-empty h2 { font-family: var(--f-prose); font-size: 22px; font-weight: 500; color: var(--text-1); }
+.chat-empty p { font-size: 13px; max-width: 320px; line-height: 1.7; }
 
-.chat-scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 32px 24px;
-  scroll-behavior: smooth;
-}
-
-.chat-inner {
-  max-width: 680px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.chat-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-  gap: 14px;
-  color: var(--text-2);
-}
-.chat-empty-glyph {
-  font-family: var(--f-prose);
-  font-size: 48px;
-  color: var(--text-3);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.chat-empty h2 {
-  font-family: var(--f-prose);
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--text-1);
-}
-.chat-empty p {
-  font-size: 13px;
-  max-width: 320px;
-  line-height: 1.7;
-}
-
-.msg { display: flex; flex-direction: column; gap: 6px; }
-
-.msg-user {
-  align-self: flex-end;
-  max-width: 72%;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg) var(--r-lg) 2px var(--r-lg);
-  padding: 10px 14px;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-1);
-}
-
+.msg-user { align-self: flex-end; max-width: 72%; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-lg) var(--r-lg) 2px var(--r-lg); padding: 10px 14px; font-size: 14px; line-height: 1.6; }
 .msg-assistant { align-self: flex-start; width: 100%; }
-
-.msg-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-.msg-glyph {
-  font-family: var(--f-prose);
-  color: var(--gold);
-  font-size: 14px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-.msg-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.msg-prose {
-  font-family: var(--f-prose);
-  font-style: italic;
-  font-size: 16px;
-  line-height: 1.8;
-  color: var(--text-1);
-  letter-spacing: 0.01em;
-}
+.msg-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.msg-glyph { font-family: var(--f-prose); color: var(--gold); font-size: 14px; }
+.msg-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+.msg-prose { font-family: var(--f-prose); font-style: italic; font-size: 16px; line-height: 1.8; color: var(--text-1); }
 .msg-prose p + p { margin-top: 0.9em; }
 
-.sources-toggle {
-  margin-top: 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-3);
-  cursor: pointer;
-  padding: 4px 0;
-  transition: color 0.12s;
-  border: none; background: none;
-  font-family: var(--f-ui);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
+.sources-toggle { margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: var(--text-3); cursor: pointer; border: none; background: none; font-family: var(--f-ui); letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.12s; padding: 0; }
 .sources-toggle:hover { color: var(--gold); }
-.sources-toggle .chevron {
-  transition: transform 0.2s;
-  display: inline-block;
-}
+.sources-toggle .chevron { transition: transform 0.2s; display: inline-block; }
 .sources-toggle.open .chevron { transform: rotate(90deg); }
-
-.sources-list {
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 8px;
-  padding-left: 0;
-}
+.sources-list { display: none; flex-direction: column; gap: 6px; margin-top: 8px; }
 .sources-list.open { display: flex; }
-
-.source-chip {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: var(--gold-glow);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 8px 12px;
-  font-size: 12px;
-  line-height: 1.5;
-}
-.source-chip-num {
-  font-family: var(--f-mono);
-  font-size: 10px;
-  color: var(--gold);
-  background: var(--gold-dim);
-  border-radius: 3px;
-  padding: 1px 5px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
+.source-chip { display: flex; align-items: flex-start; gap: 10px; background: var(--gold-glow); border: 1px solid var(--border); border-radius: var(--r); padding: 8px 12px; font-size: 12px; line-height: 1.5; }
+.source-chip-num { font-family: var(--f-mono); font-size: 10px; color: var(--gold); background: var(--gold-dim); border-radius: 3px; padding: 1px 5px; flex-shrink: 0; }
 .source-chip-meta { color: var(--text-2); }
 .source-chip-meta strong { color: var(--text-1); font-weight: 500; }
-.source-chip-preview {
-  color: var(--text-2);
-  font-size: 11px;
-  margin-top: 3px;
-  font-family: var(--f-prose);
-  font-style: italic;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+.source-chip-preview { color: var(--text-2); font-size: 11px; margin-top: 3px; font-family: var(--f-prose); font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-.thinking {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 0;
-}
-.thinking-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--gold);
-  opacity: 0.4;
-  animation: pulse 1.2s ease-in-out infinite;
-}
+.thinking { display: flex; align-items: center; gap: 4px; padding: 8px 0; }
+.thinking-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); opacity: 0.4; animation: pulse 1.2s ease-in-out infinite; }
 .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
 .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes pulse {
-  0%, 100% { opacity: 0.2; transform: scale(0.8); }
-  50% { opacity: 0.8; transform: scale(1.1); }
-}
+@keyframes pulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.8; transform: scale(1.1); } }
 
-.chat-footer {
-  border-top: 1px solid var(--border);
-  padding: 16px 24px 20px;
-  background: var(--surface);
-}
-.chat-footer-inner {
-  max-width: 680px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.chat-form {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-}
-.chat-input-wrap {
-  flex: 1;
-  position: relative;
-}
-.chat-input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border-2);
-  border-radius: var(--r-lg);
-  padding: 11px 14px;
-  font-family: var(--f-ui);
-  font-size: 14px;
-  color: var(--text-1);
-  resize: none;
-  line-height: 1.5;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  min-height: 44px;
-  max-height: 160px;
-  overflow-y: auto;
-}
+.chat-footer { border-top: 1px solid var(--border); padding: 16px 24px 20px; background: var(--surface); }
+.chat-footer-inner { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.chat-form { display: flex; gap: 10px; align-items: flex-end; }
+.chat-input { flex: 1; background: var(--bg); border: 1px solid var(--border-2); border-radius: var(--r-lg); padding: 11px 14px; font-family: var(--f-ui); font-size: 14px; color: var(--text-1); line-height: 1.5; outline: none; transition: border-color 0.15s, box-shadow 0.15s; min-height: 44px; max-height: 160px; overflow-y: auto; }
 .chat-input::placeholder { color: var(--text-3); }
-.chat-input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-dim);
-}
-.chat-send {
-  width: 44px; height: 44px;
-  background: var(--gold);
-  border: none;
-  border-radius: var(--r);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #0E1018;
-  font-size: 16px;
-  transition: background 0.12s, transform 0.1s;
-  flex-shrink: 0;
-}
+.chat-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+.chat-send { width: 44px; height: 44px; background: var(--gold); border: none; border-radius: var(--r); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #0E1018; font-size: 16px; transition: background 0.12s, transform 0.1s; flex-shrink: 0; }
 .chat-send:hover { background: #d9b957; }
 .chat-send:active { transform: scale(0.94); }
 .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.chat-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 11px;
-  color: var(--text-3);
-}
-.lang-select {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text-2);
-  font-size: 11px;
-  font-family: var(--f-ui);
-  padding: 2px 6px;
-  cursor: pointer;
-  outline: none;
-}
+.chat-meta { display: flex; align-items: center; gap: 12px; font-size: 11px; color: var(--text-3); }
+.lang-select { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text-2); font-size: 11px; font-family: var(--f-ui); padding: 2px 6px; cursor: pointer; outline: none; }
 .lang-select:focus { border-color: var(--gold); }
 .lang-select option { background: var(--surface); color: var(--text-1); }
-.clear-chat {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-3);
-  font-size: 11px;
-  font-family: var(--f-ui);
-  padding: 0;
-  transition: color 0.12s;
-}
+.clear-chat { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 11px; font-family: var(--f-ui); padding: 0; transition: color 0.12s; }
 .clear-chat:hover { color: var(--text-2); }
 
-/* ── Quiz page ────────────────────────────── */
-#page-quiz {
-  flex-direction: row;
-  overflow: hidden;
-}
-
-.quiz-panel {
-  width: 260px;
-  flex-shrink: 0;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-  overflow-y: auto;
-  padding: 20px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.quiz-panel-title {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-bottom: 2px;
-}
-
+/* ── Quiz ───────────────────────────────────────────────── */
+#page-quiz { flex-direction: row; overflow: hidden; }
+.quiz-panel { width: 260px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--surface); overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+.quiz-panel-title { font-size: 11px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-3); }
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-label { font-size: 12px; font-weight: 500; color: var(--text-2); }
-
-.form-input,
-.form-select {
-  background: var(--bg);
-  border: 1px solid var(--border-2);
-  border-radius: var(--r);
-  padding: 8px 10px;
-  font-size: 13px;
-  color: var(--text-1);
-  font-family: var(--f-ui);
-  outline: none;
-  transition: border-color 0.15s;
-  width: 100%;
-}
-.form-input:focus,
-.form-select:focus { border-color: var(--gold); }
+.form-input, .form-select { background: var(--bg); border: 1px solid var(--border-2); border-radius: var(--r); padding: 8px 10px; font-size: 13px; color: var(--text-1); font-family: var(--f-ui); outline: none; transition: border-color 0.15s; width: 100%; }
+.form-input:focus, .form-select:focus { border-color: var(--gold); }
 .form-input::placeholder { color: var(--text-3); }
 .form-select { cursor: pointer; }
 .form-select option { background: var(--surface); color: var(--text-1); }
-
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 9px 16px;
-  border-radius: var(--r);
-  border: none;
-  cursor: pointer;
-  font-family: var(--f-ui);
-  font-size: 13px;
-  font-weight: 500;
-  transition: background 0.12s, opacity 0.12s, transform 0.1s;
-}
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 16px; border-radius: var(--r); border: none; cursor: pointer; font-family: var(--f-ui); font-size: 13px; font-weight: 500; transition: background 0.12s, opacity 0.12s, transform 0.1s; }
 .btn:active { transform: scale(0.97); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .btn-primary { background: var(--gold); color: #0E1018; width: 100%; }
 .btn-primary:hover:not(:disabled) { background: #d9b957; }
-.btn-ghost {
-  background: transparent;
-  color: var(--text-2);
-  border: 1px solid var(--border-2);
-  width: 100%;
-}
-.btn-ghost:hover { background: var(--surface-h); color: var(--text-1); }
+.btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border-2); }
+.btn-ghost:hover:not(:disabled) { background: var(--surface-h); color: var(--text-1); }
 .btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-danger { background: var(--rust-dim); color: var(--rust); border: 1px solid rgba(196,88,62,0.25); }
+.btn-danger:hover:not(:disabled) { background: rgba(196,88,62,0.2); }
 
-.quiz-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 28px 32px;
-}
-
+.quiz-content { flex: 1; overflow-y: auto; padding: 28px 32px; }
 .quiz-content-inner { max-width: 720px; }
-
-.quiz-empty {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 12px;
-  color: var(--text-2);
-  text-align: center;
-}
-.quiz-empty-glyph {
-  font-family: var(--f-prose);
-  font-size: 44px;
-  color: var(--text-3);
-  margin-bottom: 4px;
-}
-.quiz-empty p { font-size: 13px; max-width: 260px; line-height: 1.7; }
-
-.quiz-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-.quiz-title {
-  font-family: var(--f-prose);
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--text-1);
-}
+.quiz-empty { height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: var(--text-2); text-align: center; padding: 60px 0; }
+.quiz-empty-glyph { font-family: var(--f-prose); font-size: 44px; color: var(--text-3); }
+.quiz-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.quiz-title { font-family: var(--f-prose); font-size: 20px; font-weight: 500; }
 .quiz-count { font-size: 12px; color: var(--text-2); }
 
-.question-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 18px 20px;
-  margin-bottom: 14px;
-  transition: border-left-color 0.2s;
-}
+.question-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--border); border-radius: var(--r-lg); padding: 18px 20px; margin-bottom: 14px; transition: border-left-color 0.2s; }
 .question-card.answered { border-left-color: var(--gold); }
 .question-card.correct { border-left-color: var(--teal); background: var(--teal-dim); }
 .question-card.wrong { border-left-color: var(--rust); background: var(--rust-dim); }
-
-.question-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.question-num {
-  font-family: var(--f-mono);
-  font-size: 10px;
-  color: var(--text-3);
-  letter-spacing: 0.05em;
-}
-.question-difficulty {
-  font-size: 10px;
-  padding: 2px 7px;
-  border-radius: 3px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
+.question-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.question-num { font-family: var(--f-mono); font-size: 10px; color: var(--text-3); }
+.question-difficulty { font-size: 10px; padding: 2px 7px; border-radius: 3px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
 .difficulty-easy { background: var(--teal-dim); color: var(--teal); }
 .difficulty-medium { background: var(--gold-dim); color: var(--gold); }
 .difficulty-hard { background: var(--rust-dim); color: var(--rust); }
-
-.question-text {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-1);
-  line-height: 1.6;
-  margin-bottom: 14px;
-}
-
+.question-text { font-size: 14px; font-weight: 500; color: var(--text-1); line-height: 1.6; margin-bottom: 14px; }
 .options { display: flex; flex-direction: column; gap: 7px; }
-
-.option {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: var(--r);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
-  background: var(--surface-2);
-}
+.option { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border-radius: var(--r); border: 1px solid var(--border); cursor: pointer; transition: background 0.12s, border-color 0.12s; background: var(--surface-2); }
 .option:hover { background: var(--surface-h); border-color: var(--border-2); }
 .option.selected { border-color: var(--gold); background: var(--gold-dim); }
 .option.correct-ans { border-color: var(--teal); background: var(--teal-dim); }
 .option.wrong-ans { border-color: var(--rust); background: var(--rust-dim); }
-.option-letter {
-  font-family: var(--f-mono);
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--text-3);
-  background: var(--bg);
-  border-radius: 3px;
-  padding: 1px 5px;
-  flex-shrink: 0;
-  margin-top: 1px;
-  transition: color 0.12s, background 0.12s;
-}
+.option-letter { font-family: var(--f-mono); font-size: 10px; font-weight: 500; color: var(--text-3); background: var(--bg); border-radius: 3px; padding: 1px 5px; flex-shrink: 0; margin-top: 1px; }
 .option.selected .option-letter { color: var(--gold); background: var(--gold-dim); }
 .option.correct-ans .option-letter { color: var(--teal); background: var(--teal-dim); }
 .option.wrong-ans .option-letter { color: var(--rust); background: var(--rust-dim); }
 .option-text { font-size: 13px; color: var(--text-1); line-height: 1.5; }
-
-.text-answer {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border-2);
-  border-radius: var(--r);
-  padding: 9px 12px;
-  font-size: 13px;
-  font-family: var(--f-ui);
-  color: var(--text-1);
-  outline: none;
-  transition: border-color 0.15s;
-}
+.text-answer { width: 100%; background: var(--bg); border: 1px solid var(--border-2); border-radius: var(--r); padding: 9px 12px; font-size: 13px; font-family: var(--f-ui); color: var(--text-1); outline: none; }
 .text-answer:focus { border-color: var(--gold); }
 .text-answer::placeholder { color: var(--text-3); }
-
-.result-box {
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: var(--r);
-  display: none;
-  flex-direction: column;
-  gap: 6px;
-}
+.result-box { margin-top: 12px; padding: 12px 14px; border-radius: var(--r); display: none; flex-direction: column; gap: 6px; }
 .result-box.visible { display: flex; }
 .result-box.correct-box { background: var(--teal-dim); border: 1px solid rgba(58,155,127,0.25); }
 .result-box.wrong-box { background: var(--rust-dim); border: 1px solid rgba(196,88,62,0.25); }
-.result-status {
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.result-status { font-size: 12px; font-weight: 600; }
 .result-status.correct { color: var(--teal); }
 .result-status.wrong { color: var(--rust); }
 .result-correct-answer { font-size: 12px; color: var(--text-2); }
 .result-correct-answer strong { color: var(--text-1); font-weight: 500; }
-.result-explanation {
-  font-family: var(--f-prose);
-  font-style: italic;
-  font-size: 13px;
-  color: var(--text-1);
-  line-height: 1.7;
-  margin-top: 2px;
-}
-
-.quiz-submit-bar {
-  display: none;
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  align-items: center;
-}
+.result-explanation { font-family: var(--f-prose); font-style: italic; font-size: 13px; color: var(--text-1); line-height: 1.7; }
+.quiz-submit-bar { display: none; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); align-items: center; }
 .quiz-submit-bar.visible { display: flex; }
-.score-display {
-  font-family: var(--f-mono);
-  font-size: 14px;
-  color: var(--text-2);
-  margin-left: auto;
-}
-.score-display .score-val {
-  color: var(--gold);
-  font-weight: 500;
-}
+.score-display { font-family: var(--f-mono); font-size: 14px; color: var(--text-2); margin-left: auto; }
+.score-display .score-val { color: var(--gold); font-weight: 500; }
 
-/* ── Weak Areas page ──────────────────────── */
+/* ── Weak Areas ─────────────────────────────────────────── */
 #page-weak { overflow-y: auto; padding: 32px; }
-
-.weak-header {
-  max-width: 720px;
-  margin: 0 auto 28px;
-}
-.weak-header h1 {
-  font-family: var(--f-prose);
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-.weak-header p { font-size: 13px; color: var(--text-2); }
-
-.weak-grid {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.weak-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 14px 18px;
-}
-.weak-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.weak-concept { font-size: 14px; font-weight: 500; color: var(--text-1); }
-.weak-accuracy {
-  font-family: var(--f-mono);
-  font-size: 12px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
+.page-header { max-width: 720px; margin: 0 auto 28px; }
+.page-header h1 { font-family: var(--f-prose); font-size: 24px; font-weight: 500; margin-bottom: 4px; }
+.page-header p { font-size: 13px; color: var(--text-2); }
+.weak-grid { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.weak-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px 18px; }
+.weak-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.weak-concept { font-size: 14px; font-weight: 500; }
+.weak-accuracy { font-family: var(--f-mono); font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
 .weak-accuracy.low { color: var(--rust); background: var(--rust-dim); }
 .weak-accuracy.mid { color: var(--gold); background: var(--gold-dim); }
 .weak-accuracy.high { color: var(--teal); background: var(--teal-dim); }
-
-.weak-bar-bg {
-  height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-.weak-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.6s ease;
-}
+.weak-bar-bg { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 10px; }
+.weak-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
 .weak-bar-fill.low { background: var(--rust); }
 .weak-bar-fill.mid { background: var(--gold); }
 .weak-bar-fill.high { background: var(--teal); }
-
-.weak-stats {
-  font-size: 11px;
-  color: var(--text-2);
-  margin-bottom: 8px;
-}
-
-.weak-questions {
-  display: none;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 8px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-.weak-questions.open { display: flex; }
-.weak-q {
-  font-size: 12px;
-  color: var(--text-2);
-  font-family: var(--f-prose);
-  font-style: italic;
-  line-height: 1.5;
-  padding-left: 10px;
-  border-left: 2px solid var(--border-2);
-}
-
-.weak-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 11px;
-  color: var(--text-3);
-  font-family: var(--f-ui);
-  padding: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: color 0.12s;
-}
+.weak-stats { font-size: 11px; color: var(--text-2); margin-bottom: 6px; }
+.weak-toggle { background: none; border: none; cursor: pointer; font-size: 11px; color: var(--text-3); font-family: var(--f-ui); padding: 0; text-transform: uppercase; letter-spacing: 0.05em; transition: color 0.12s; }
 .weak-toggle:hover { color: var(--gold); }
+.weak-questions { display: none; flex-direction: column; gap: 4px; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--border); }
+.weak-questions.open { display: flex; }
+.weak-q { font-size: 12px; color: var(--text-2); font-family: var(--f-prose); font-style: italic; line-height: 1.5; padding-left: 10px; border-left: 2px solid var(--border-2); }
 
-.empty-state {
-  max-width: 720px;
-  margin: 60px auto;
-  text-align: center;
-  color: var(--text-2);
-}
-.empty-state .glyph {
-  font-family: var(--f-prose);
-  font-size: 40px;
-  color: var(--text-3);
-  margin-bottom: 12px;
-}
-.empty-state h2 {
-  font-family: var(--f-prose);
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--text-1);
-  margin-bottom: 6px;
-}
-.empty-state p { font-size: 13px; line-height: 1.7; }
-
-/* ── Documents page ───────────────────────── */
+/* ── Documents ──────────────────────────────────────────── */
 #page-docs { overflow-y: auto; padding: 32px; }
-
-.docs-header {
-  max-width: 720px;
-  margin: 0 auto 24px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-.docs-header-text h1 {
-  font-family: var(--f-prose);
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-.docs-header-text p { font-size: 13px; color: var(--text-2); }
-
-.ingest-status {
-  max-width: 720px;
-  margin: 0 auto 16px;
-  padding: 10px 14px;
-  border-radius: var(--r);
-  font-size: 12px;
-  display: none;
-  align-items: center;
-  gap: 8px;
-}
+.docs-header { max-width: 720px; margin: 0 auto 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.docs-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.ingest-status { max-width: 720px; margin: 0 auto 16px; padding: 10px 14px; border-radius: var(--r); font-size: 12px; display: none; align-items: center; gap: 8px; }
 .ingest-status.visible { display: flex; }
 .ingest-status.running { background: var(--gold-dim); border: 1px solid rgba(200,168,75,0.2); color: var(--gold); }
 .ingest-status.done { background: var(--teal-dim); border: 1px solid rgba(58,155,127,0.2); color: var(--teal); }
 .ingest-status.error { background: var(--rust-dim); border: 1px solid rgba(196,88,62,0.2); color: var(--rust); }
 
-.docs-drop-zone {
-  max-width: 720px;
-  margin: 0 auto 20px;
-  border: 1.5px dashed var(--border-2);
-  border-radius: var(--r-lg);
-  padding: 28px;
-  text-align: center;
-  color: var(--text-2);
-  font-size: 13px;
-  transition: border-color 0.2s, background 0.2s;
-}
-.docs-drop-zone:hover { border-color: var(--gold); background: var(--gold-glow); }
-.docs-drop-zone p { margin-top: 4px; }
-.docs-drop-icon { font-size: 24px; color: var(--text-3); margin-bottom: 8px; }
-.docs-folder {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  color: var(--gold);
-  margin-top: 6px;
-}
+/* Upload drop zone */
+.upload-zone { max-width: 720px; margin: 0 auto 20px; border: 1.5px dashed var(--border-2); border-radius: var(--r-lg); padding: 28px; text-align: center; color: var(--text-2); font-size: 13px; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+.upload-zone:hover, .upload-zone.drag-over { border-color: var(--gold); background: var(--gold-glow); }
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 24px; color: var(--text-3); margin-bottom: 8px; }
+.upload-zone strong { color: var(--text-1); }
+.upload-zone p { margin-top: 4px; font-size: 12px; }
+.upload-hint { font-family: var(--f-mono); font-size: 10px; color: var(--text-3); margin-top: 6px; }
 
-.docs-list {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.doc-row {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.doc-type {
-  font-family: var(--f-mono);
-  font-size: 9px;
-  font-weight: 500;
-  padding: 2px 6px;
-  border-radius: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  flex-shrink: 0;
-}
+.docs-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 6px; }
+.doc-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
+.doc-type { font-family: var(--f-mono); font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
 .doc-type-pdf { background: var(--rust-dim); color: var(--rust); }
 .doc-type-csv { background: var(--teal-dim); color: var(--teal); }
-.doc-type-txt { background: var(--gold-dim); color: var(--gold); }
+.doc-type-txt, .doc-type-md { background: var(--gold-dim); color: var(--gold); }
 .doc-name { font-size: 13px; color: var(--text-1); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.doc-date { font-size: 11px; color: var(--text-3); flex-shrink: 0; font-family: var(--f-mono); }
+.doc-status { font-size: 10px; flex-shrink: 0; font-family: var(--f-mono); }
+.doc-status.ingested { color: var(--teal); }
+.doc-status.pending { color: var(--text-3); }
+.doc-size { font-size: 11px; color: var(--text-3); flex-shrink: 0; font-family: var(--f-mono); }
 
-/* ── Spinner ──────────────────────────────── */
-.spinner {
-  display: inline-block;
-  width: 14px; height: 14px;
-  border: 2px solid rgba(200,168,75,0.2);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
+/* ── Modal ──────────────────────────────────────────────── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(4px); }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border: 1px solid var(--border-2); border-radius: var(--r-lg); padding: 28px; width: 480px; max-width: calc(100vw - 48px); max-height: calc(100vh - 96px); overflow-y: auto; transform: translateY(12px); transition: transform 0.2s; }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.modal-title { font-family: var(--f-prose); font-size: 20px; font-weight: 500; }
+.modal-close { background: none; border: none; cursor: pointer; color: var(--text-2); font-size: 20px; line-height: 1; padding: 0; transition: color 0.12s; }
+.modal-close:hover { color: var(--text-1); }
+.modal-body { display: flex; flex-direction: column; gap: 16px; }
+.modal-footer { margin-top: 24px; display: flex; gap: 10px; justify-content: flex-end; }
+.modal-footer .btn { width: auto; }
+
+/* Model tier selector */
+.tier-group { display: flex; flex-direction: column; gap: 8px; }
+.tier-option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; transition: border-color 0.15s, background 0.15s; background: var(--bg); }
+.tier-option:hover { border-color: var(--border-2); background: var(--surface-h); }
+.tier-option.selected { border-color: var(--gold); background: var(--gold-dim); }
+.tier-radio { width: 14px; height: 14px; border: 2px solid var(--border-2); border-radius: 50%; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s; }
+.tier-option.selected .tier-radio { border-color: var(--gold); }
+.tier-radio-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); display: none; }
+.tier-option.selected .tier-radio-dot { display: block; }
+.tier-info { flex: 1; }
+.tier-label { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.tier-desc { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.tier-badge { font-family: var(--f-mono); font-size: 10px; color: var(--gold); background: var(--gold-dim); padding: 1px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+
+/* ── Misc ───────────────────────────────────────────────── */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(200,168,75,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Toast ────────────────────────────────── */
-#toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--surface-2);
-  border: 1px solid var(--border-2);
-  border-radius: var(--r);
-  padding: 10px 16px;
-  font-size: 13px;
-  color: var(--text-1);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.2s, transform 0.2s;
-  pointer-events: none;
-  max-width: 300px;
-  z-index: 100;
-}
+.empty-state { max-width: 720px; margin: 60px auto; text-align: center; color: var(--text-2); }
+.empty-state .glyph { font-family: var(--f-prose); font-size: 40px; color: var(--text-3); margin-bottom: 12px; }
+.empty-state h2 { font-family: var(--f-prose); font-size: 18px; font-weight: 500; color: var(--text-1); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; line-height: 1.7; }
+
+#toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface-2); border: 1px solid var(--border-2); border-radius: var(--r); padding: 10px 16px; font-size: 13px; color: var(--text-1); opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; max-width: 320px; z-index: 300; }
 #toast.show { opacity: 1; transform: translateY(0); }
 
-/* ── Scrollbar ────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
-
-/* ── Focus ────────────────────────────────── */
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 </style>
 </head>
 <body>
@@ -1030,37 +315,29 @@ html, body {
       <span class="sidebar-logo-text">StudyApp</span>
     </div>
 
-    <div class="sidebar-section">Subjects</div>
+    <div class="sidebar-section-row">
+      <span class="sidebar-section">Subjects</span>
+      <button class="add-subject-btn" id="add-subject-btn" title="New subject">+</button>
+    </div>
+
     <div class="subject-list" id="subject-list">
       <div style="padding:10px 8px;font-size:12px;color:var(--text-3)">Loading…</div>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-item active" data-page="chat">
-        <span class="nav-icon">💬</span> Study Chat
-      </div>
-      <div class="nav-item" data-page="quiz">
-        <span class="nav-icon">🧪</span> Quiz
-      </div>
-      <div class="nav-item" data-page="weak">
-        <span class="nav-icon">⚠️</span> Weak Areas
-      </div>
-      <div class="nav-item" data-page="docs">
-        <span class="nav-icon">📄</span> Documents
-      </div>
+      <div class="nav-item active" data-page="chat"><span class="nav-icon">💬</span> Study Chat</div>
+      <div class="nav-item" data-page="quiz"><span class="nav-icon">🧪</span> Quiz</div>
+      <div class="nav-item" data-page="weak"><span class="nav-icon">⚠️</span> Weak Areas</div>
+      <div class="nav-item" data-page="docs"><span class="nav-icon">📄</span> Documents</div>
     </nav>
   </aside>
 
   <!-- Main -->
   <div class="main">
-    <!-- Topbar -->
     <div class="topbar">
       <span class="topbar-subject" id="topbar-subject">—</span>
       <div class="topbar-divider"></div>
       <span class="topbar-page" id="topbar-page">Study Chat</span>
-      <div class="topbar-right">
-        <span class="topbar-badge" id="topbar-badge" style="display:none"></span>
-      </div>
     </div>
 
     <!-- Chat -->
@@ -1070,24 +347,15 @@ html, body {
           <div class="chat-empty" id="chat-empty">
             <div class="chat-empty-glyph">◆</div>
             <h2>Ask anything about your materials</h2>
-            <p>Select a subject, then ask a question. Answers are drawn only from your ingested documents.</p>
+            <p>Select a subject, then ask a question. Answers come only from your ingested documents.</p>
           </div>
         </div>
       </div>
       <div class="chat-footer">
         <div class="chat-footer-inner">
           <div class="chat-form">
-            <div class="chat-input-wrap">
-              <textarea
-                class="chat-input"
-                id="chat-input"
-                placeholder="Ask a question…"
-                rows="1"
-              ></textarea>
-            </div>
-            <button class="chat-send" id="chat-send" title="Send">
-              ↑
-            </button>
+            <textarea class="chat-input" id="chat-input" placeholder="Ask a question…" rows="1"></textarea>
+            <button class="chat-send" id="chat-send">↑</button>
           </div>
           <div class="chat-meta">
             <label for="lang-select" style="color:var(--text-3)">Answer in</label>
@@ -1110,15 +378,11 @@ html, body {
     <!-- Quiz -->
     <div class="page" id="page-quiz">
       <div class="quiz-panel">
-        <div>
-          <div class="quiz-panel-title">Quiz Settings</div>
-        </div>
-
+        <div class="quiz-panel-title">Quiz Settings</div>
         <div class="form-group">
           <label class="form-label">Topic</label>
           <input class="form-input" id="quiz-topic" type="text" placeholder="Leave blank for general…">
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Questions</label>
@@ -1133,7 +397,6 @@ html, body {
             </select>
           </div>
         </div>
-
         <div class="form-group">
           <label class="form-label">Type</label>
           <select class="form-select" id="quiz-type">
@@ -1145,7 +408,6 @@ html, body {
             <option value="mixed">Mixed</option>
           </select>
         </div>
-
         <div class="form-group">
           <label class="form-label">Output Language</label>
           <select class="form-select" id="quiz-lang">
@@ -1157,14 +419,8 @@ html, body {
             <option value="zh">Chinese</option>
           </select>
         </div>
-
-        <button class="btn btn-primary" id="quiz-generate-btn">
-          Generate Quiz
-        </button>
-
-        <button class="btn btn-ghost btn-sm" id="quiz-submit-btn" style="display:none">
-          Submit All Answers
-        </button>
+        <button class="btn btn-primary" id="quiz-generate-btn">Generate Quiz</button>
+        <button class="btn btn-ghost btn-sm" id="quiz-submit-btn" style="display:none">Submit All Answers</button>
       </div>
 
       <div class="quiz-content">
@@ -1173,7 +429,6 @@ html, body {
             <div class="quiz-empty-glyph">✦</div>
             <p>Configure a quiz on the left and press Generate to begin.</p>
           </div>
-
           <div id="quiz-questions" style="display:none">
             <div class="quiz-header">
               <span class="quiz-title" id="quiz-title">Quiz</span>
@@ -1193,7 +448,7 @@ html, body {
 
     <!-- Weak Areas -->
     <div class="page" id="page-weak">
-      <div class="weak-header">
+      <div class="page-header">
         <h1>Weak Areas</h1>
         <p>Concepts ordered by accuracy across all quiz attempts.</p>
       </div>
@@ -1209,23 +464,84 @@ html, body {
     <!-- Documents -->
     <div class="page" id="page-docs">
       <div class="docs-header">
-        <div class="docs-header-text">
+        <div class="page-header" style="margin:0">
           <h1>Documents</h1>
-          <p>Source files for the selected subject.</p>
+          <p>Upload files and index them for this subject.</p>
         </div>
-        <button class="btn btn-primary btn-sm" id="ingest-btn">Re-index Subject</button>
+        <div class="docs-header-actions">
+          <button class="btn btn-ghost btn-sm" id="ingest-btn">Re-index</button>
+        </div>
       </div>
 
       <div class="ingest-status" id="ingest-status"></div>
 
-      <div class="docs-drop-zone">
-        <div class="docs-drop-icon">📁</div>
-        <strong>Drop files in the input folder</strong>
-        <p>Supported: PDF, CSV, TXT, MD — then click Re-index to process.</p>
-        <div class="docs-folder" id="docs-folder-path">—</div>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="file-input" multiple accept=".pdf,.csv,.txt,.md">
+        <div class="upload-icon">📂</div>
+        <strong>Click to upload or drag files here</strong>
+        <p>PDF, CSV, TXT, MD — files are saved to this subject's folder</p>
+        <div class="upload-hint" id="upload-hint">Select a subject to upload</div>
       </div>
 
       <div class="docs-list" id="docs-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- New Subject Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-text">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-text">New Subject</span>
+      <button class="modal-close" id="modal-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="new-display-name">Subject Name *</label>
+        <input class="form-input" id="new-display-name" type="text" placeholder="e.g. Organic Chemistry, French History…">
+        <div id="new-id-preview" style="font-size:11px;color:var(--text-3);margin-top:4px;font-family:var(--f-mono)"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="new-src-lang">Source Language</label>
+          <select class="form-select" id="new-src-lang">
+            <option value="auto">Auto-detect</option>
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="es">Spanish</option>
+            <option value="pt">Portuguese</option>
+            <option value="ar">Arabic</option>
+            <option value="zh">Chinese</option>
+            <option value="ja">Japanese</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-out-lang">Answer Language</label>
+          <select class="form-select" id="new-out-lang">
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="es">Spanish</option>
+            <option value="pt">Portuguese</option>
+            <option value="ar">Arabic</option>
+            <option value="zh">Chinese</option>
+            <option value="ja">Japanese</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Model Tier</label>
+        <div class="tier-group" id="tier-group">
+          <div style="color:var(--text-3);font-size:12px">Loading models…</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+      <button class="btn btn-primary" id="modal-create" style="width:auto">Create Subject</button>
     </div>
   </div>
 </div>
@@ -1238,41 +554,47 @@ const BACKEND = (() => {
   return `${protocol}//${hostname}:8000`;
 })();
 
-// ── State ────────────────────────────────────
+// ── State ─────────────────────────────────────
 let currentSubject = null;
+let currentSubjectName = '';
 let sessionId = null;
-let chatMessages = [];
-let quizItems = [];
-let quizAnswers = {};
-let quizGraded = false;
+let quizItems = [], quizAnswers = {}, quizGraded = false;
 let ingestPollTimer = null;
+let modelTiers = [];
+let selectedTier = 'balanced';
 
-// ── API ──────────────────────────────────────
+// ── API ───────────────────────────────────────
 async function api(method, path, body) {
   try {
     const opts = { method, headers: { 'Content-Type': 'application/json' } };
-    if (body) opts.body = JSON.stringify(body);
+    if (body != null) opts.body = JSON.stringify(body);
     const r = await fetch(`${BACKEND}${path}`, opts);
     if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || r.statusText); }
     return r.json();
-  } catch (e) {
-    showToast(e.message || 'Request failed');
-    throw e;
-  }
+  } catch (e) { showToast(e.message || 'Request failed'); throw e; }
+}
+
+async function apiUpload(path, formData) {
+  try {
+    const r = await fetch(`${BACKEND}${path}`, { method: 'POST', body: formData });
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || r.statusText); }
+    return r.json();
+  } catch (e) { showToast(e.message || 'Upload failed'); throw e; }
 }
 
 // ── Toast ─────────────────────────────────────
-let toastTimer;
-function showToast(msg) {
+let _toastTimer;
+function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
+  t.style.borderColor = type === 'ok' ? 'rgba(58,155,127,0.4)' : '';
   t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 // ── Navigation ────────────────────────────────
-const pageNames = { chat: 'Study Chat', quiz: 'Quiz', weak: 'Weak Areas', docs: 'Documents' };
+const PAGE_NAMES = { chat: 'Study Chat', quiz: 'Quiz', weak: 'Weak Areas', docs: 'Documents' };
 
 document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => {
@@ -1281,114 +603,163 @@ document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.add('active');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(`page-${page}`).classList.add('active');
-    document.getElementById('topbar-page').textContent = pageNames[page];
+    document.getElementById('topbar-page').textContent = PAGE_NAMES[page];
     if (page === 'weak' && currentSubject) loadWeakAreas();
     if (page === 'docs' && currentSubject) loadDocsPage();
   });
 });
 
 // ── Subjects ──────────────────────────────────
-async function loadSubjects() {
+async function loadSubjects(autoSelectId) {
   const data = await api('GET', '/subjects').catch(() => []);
   const list = document.getElementById('subject-list');
   if (!data || !data.length) {
-    list.innerHTML = `<div style="padding:10px 8px;font-size:12px;color:var(--text-3)">No subjects found. Add a folder under data/subjects/.</div>`;
+    list.innerHTML = `<div style="padding:10px 8px;font-size:12px;color:var(--text-3)">No subjects yet. Click + to create one.</div>`;
     return;
   }
   list.innerHTML = data.map(s => `
-    <div class="subject-item" data-id="${s.subject_id}" data-folder="${s.input_folder || ''}">
+    <div class="subject-item" data-id="${esc(s.subject_id)}" data-name="${esc(s.display_name)}" data-folder="${esc(s.input_folder||'')}">
       <div class="subject-dot"></div>
-      <span>${s.display_name}</span>
-    </div>
-  `).join('');
+      <span>${esc(s.display_name)}</span>
+    </div>`).join('');
   list.querySelectorAll('.subject-item').forEach(el => {
-    el.addEventListener('click', () => selectSubject(el.dataset.id, el.dataset.folder, el.textContent.trim()));
+    el.addEventListener('click', () => selectSubject(el.dataset.id, el.dataset.name, el.dataset.folder));
   });
-  // Auto-select first
-  const first = list.querySelector('.subject-item');
-  if (first) selectSubject(first.dataset.id, first.dataset.folder, first.textContent.trim());
+  const target = autoSelectId
+    ? list.querySelector(`.subject-item[data-id="${autoSelectId}"]`)
+    : (!currentSubject ? list.querySelector('.subject-item') : list.querySelector(`.subject-item[data-id="${currentSubject}"]`));
+  if (target) target.click();
 }
 
-function selectSubject(id, folder, name) {
+function selectSubject(id, name, folder) {
   if (currentSubject === id) return;
   currentSubject = id;
+  currentSubjectName = name;
   sessionId = null;
-  chatMessages = [];
-
-  document.querySelectorAll('.subject-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.id === id);
-  });
+  document.querySelectorAll('.subject-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
   document.getElementById('topbar-subject').textContent = name;
-  document.getElementById('docs-folder-path').textContent = folder || '—';
-
+  document.getElementById('upload-hint').textContent = folder || id;
   clearChatUI();
-  quizItems = [];
-  quizAnswers = {};
-  quizGraded = false;
+  quizItems = []; quizAnswers = {}; quizGraded = false;
   resetQuizUI();
+}
+
+// ── New Subject Modal ─────────────────────────
+document.getElementById('add-subject-btn').addEventListener('click', openModal);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+document.getElementById('modal-create').addEventListener('click', createSubject);
+
+document.getElementById('new-display-name').addEventListener('input', e => {
+  const slug = slugify(e.target.value);
+  document.getElementById('new-id-preview').textContent = slug ? `ID: ${slug}` : '';
+});
+
+async function openModal() {
+  if (!modelTiers.length) {
+    const tiers = await api('GET', '/subjects/models/tiers').catch(() => []);
+    modelTiers = tiers;
+  }
+  renderTierGroup();
+  document.getElementById('new-display-name').value = '';
+  document.getElementById('new-id-preview').textContent = '';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('new-display-name').focus(), 60);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function renderTierGroup() {
+  const container = document.getElementById('tier-group');
+  if (!modelTiers.length) {
+    container.innerHTML = `<div style="color:var(--text-3);font-size:12px">Could not load model list. Default will be used.</div>`;
+    return;
+  }
+  container.innerHTML = modelTiers.map(t => `
+    <div class="tier-option ${t.tier === selectedTier ? 'selected' : ''}" data-tier="${esc(t.tier)}" data-model="${esc(t.model)}">
+      <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+      <div class="tier-info">
+        <div class="tier-label">${esc(t.label)}</div>
+        <div class="tier-desc">${esc(t.description)}</div>
+      </div>
+    </div>`).join('');
+  container.querySelectorAll('.tier-option').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedTier = el.dataset.tier;
+      container.querySelectorAll('.tier-option').forEach(o => o.classList.toggle('selected', o.dataset.tier === selectedTier));
+    });
+  });
+}
+
+async function createSubject() {
+  const name = document.getElementById('new-display-name').value.trim();
+  if (!name) { document.getElementById('new-display-name').focus(); return; }
+
+  const selectedTierInfo = modelTiers.find(t => t.tier === selectedTier);
+  const model = selectedTierInfo?.model || '';
+
+  const btn = document.getElementById('modal-create');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const result = await api('POST', '/subjects', {
+      display_name: name,
+      source_language: document.getElementById('new-src-lang').value,
+      output_language: document.getElementById('new-out-lang').value,
+      chat_model: model,
+      quiz_model: model,
+    });
+    closeModal();
+    showToast(`"${name}" created`, 'ok');
+    await loadSubjects(result.subject_id);
+    // Switch to Documents tab so they can immediately upload files
+    document.querySelector('.nav-item[data-page="docs"]').click();
+  } catch {
+    // error already toasted
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create Subject';
+  }
 }
 
 // ── Chat ──────────────────────────────────────
 const chatInput = document.getElementById('chat-input');
-const chatSend = document.getElementById('chat-send');
-const chatScroll = document.getElementById('chat-scroll');
-
-chatInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-});
-chatInput.addEventListener('input', () => {
-  chatInput.style.height = 'auto';
-  chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
-});
-chatSend.addEventListener('click', sendChat);
-document.getElementById('clear-chat').addEventListener('click', () => {
-  sessionId = null;
-  chatMessages = [];
-  clearChatUI();
-});
+chatInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+chatInput.addEventListener('input', () => { chatInput.style.height = 'auto'; chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px'; });
+document.getElementById('chat-send').addEventListener('click', sendChat);
+document.getElementById('clear-chat').addEventListener('click', () => { sessionId = null; clearChatUI(); });
 
 function clearChatUI() {
-  const container = document.getElementById('chat-messages');
-  container.innerHTML = `
+  document.getElementById('chat-messages').innerHTML = `
     <div class="chat-empty" id="chat-empty">
       <div class="chat-empty-glyph">◆</div>
       <h2>Ask anything about your materials</h2>
-      <p>Select a subject, then ask a question. Answers are drawn only from your ingested documents.</p>
+      <p>Select a subject, then ask a question. Answers come only from your ingested documents.</p>
     </div>`;
 }
 
-function removeEmpty() {
-  const e = document.getElementById('chat-empty');
-  if (e) e.remove();
-}
+function removeEmpty() { document.getElementById('chat-empty')?.remove(); }
 
 function appendUserMsg(text) {
   removeEmpty();
-  const container = document.getElementById('chat-messages');
   const div = document.createElement('div');
-  div.className = 'msg';
-  div.innerHTML = `<div class="msg-user">${escHtml(text)}</div>`;
-  container.appendChild(div);
+  div.innerHTML = `<div class="msg-user">${esc(text)}</div>`;
+  document.getElementById('chat-messages').appendChild(div);
   scrollChat();
 }
 
 function appendThinking() {
   removeEmpty();
-  const container = document.getElementById('chat-messages');
   const div = document.createElement('div');
-  div.className = 'msg msg-assistant';
+  div.className = 'msg-assistant';
   div.id = 'thinking-msg';
-  div.innerHTML = `
-    <div class="msg-header">
-      <span class="msg-glyph">◆</span>
-      <span class="msg-label">Thinking</span>
-    </div>
-    <div class="thinking">
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-    </div>`;
-  container.appendChild(div);
+  div.innerHTML = `<div class="msg-header"><span class="msg-glyph">◆</span><span class="msg-label">Thinking</span></div>
+    <div class="thinking"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>`;
+  document.getElementById('chat-messages').appendChild(div);
   scrollChat();
   return div;
 }
@@ -1397,87 +768,42 @@ function replaceThinking(answer, sources) {
   const el = document.getElementById('thinking-msg');
   if (!el) return;
   el.id = '';
-  el.innerHTML = buildAssistantMsg(answer, sources);
-  el.querySelectorAll('.sources-toggle').forEach(btn => {
-    btn.addEventListener('click', () => toggleSources(btn));
-  });
-  scrollChat();
-}
-
-function buildAssistantMsg(answer, sources) {
-  const paras = answer.split('\n\n').filter(Boolean).map(p => `<p>${escHtml(p)}</p>`).join('');
+  const paras = answer.split('\n\n').filter(Boolean).map(p => `<p>${esc(p)}</p>`).join('');
   let sourcesHtml = '';
-  if (sources && sources.length) {
-    sourcesHtml = `
-      <button class="sources-toggle" aria-expanded="false">
-        <span class="chevron">›</span>
-        ${sources.length} source${sources.length > 1 ? 's' : ''}
-      </button>
-      <div class="sources-list">
-        ${sources.map((s, i) => `
-          <div class="source-chip">
-            <span class="source-chip-num">[${i+1}]</span>
-            <div>
-              <div class="source-chip-meta">
-                <strong>${escHtml(s.source_file || '?')}</strong>
-                ${s.page_number ? ` · p. ${s.page_number}` : ''}
-                · score ${s.score || ''}
-              </div>
-              <div class="source-chip-preview">${escHtml(s.text_preview || '')}</div>
-            </div>
-          </div>`).join('')}
-      </div>`;
+  if (sources?.length) {
+    sourcesHtml = `<button class="sources-toggle"><span class="chevron">›</span> ${sources.length} source${sources.length > 1 ? 's' : ''}</button>
+      <div class="sources-list">${sources.map((s, i) => `
+        <div class="source-chip">
+          <span class="source-chip-num">[${i+1}]</span>
+          <div><div class="source-chip-meta"><strong>${esc(s.source_file||'?')}</strong>${s.page_number ? ` · p.${s.page_number}` : ''} · ${s.score||''}</div>
+          <div class="source-chip-preview">${esc(s.text_preview||'')}</div></div>
+        </div>`).join('')}</div>`;
   }
-  return `
-    <div class="msg-header">
-      <span class="msg-glyph">◆</span>
-      <span class="msg-label">Answer</span>
-    </div>
-    <div class="msg-prose">${paras}</div>
-    ${sourcesHtml}`;
-}
-
-function toggleSources(btn) {
-  btn.classList.toggle('open');
-  btn.setAttribute('aria-expanded', btn.classList.contains('open'));
-  const list = btn.nextElementSibling;
-  list.classList.toggle('open');
+  el.innerHTML = `<div class="msg-header"><span class="msg-glyph">◆</span><span class="msg-label">Answer</span></div>
+    <div class="msg-prose">${paras}</div>${sourcesHtml}`;
+  el.querySelectorAll('.sources-toggle').forEach(btn => btn.addEventListener('click', () => {
+    btn.classList.toggle('open');
+    btn.nextElementSibling.classList.toggle('open');
+  }));
+  scrollChat();
 }
 
 async function sendChat() {
   const q = chatInput.value.trim();
   if (!q || !currentSubject) return;
-  chatInput.value = '';
-  chatInput.style.height = 'auto';
-  chatSend.disabled = true;
-
+  chatInput.value = ''; chatInput.style.height = 'auto';
+  document.getElementById('chat-send').disabled = true;
   appendUserMsg(q);
-  const thinkingEl = appendThinking();
-
+  const el = appendThinking();
   try {
-    const lang = document.getElementById('lang-select').value;
-    const resp = await api('POST', '/chat', {
-      subject_id: currentSubject,
-      question: q,
-      session_id: sessionId,
-      output_language: lang,
-    });
+    const resp = await api('POST', '/chat', { subject_id: currentSubject, question: q, session_id: sessionId, output_language: document.getElementById('lang-select').value });
     sessionId = resp.session_id;
     replaceThinking(resp.answer, resp.sources);
-  } catch {
-    thinkingEl.remove();
-  } finally {
-    chatSend.disabled = false;
-    chatInput.focus();
-  }
+  } catch { el.remove(); }
+  finally { document.getElementById('chat-send').disabled = false; chatInput.focus(); }
 }
 
-function scrollChat() {
-  setTimeout(() => {
-    const s = document.getElementById('chat-scroll');
-    s.scrollTop = s.scrollHeight;
-  }, 30);
-}
+function scrollChat() { setTimeout(() => { const s = document.getElementById('chat-scroll'); s.scrollTop = s.scrollHeight; }, 30); }
 
 // ── Quiz ──────────────────────────────────────
 document.getElementById('quiz-generate-btn').addEventListener('click', generateQuiz);
@@ -1487,9 +813,7 @@ document.getElementById('quiz-submit-inline').addEventListener('click', submitQu
 async function generateQuiz() {
   if (!currentSubject) { showToast('Select a subject first'); return; }
   const btn = document.getElementById('quiz-generate-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Generating…';
-
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Generating…';
   try {
     const resp = await api('POST', '/quiz/generate', {
       subject_id: currentSubject,
@@ -1499,20 +823,10 @@ async function generateQuiz() {
       quiz_type: document.getElementById('quiz-type').value,
       output_language: document.getElementById('quiz-lang').value,
     });
-
-    if (!resp || !resp.items || !resp.items.length) {
-      showToast('No items generated — try ingesting documents first.');
-      return;
-    }
-
-    quizItems = resp.items;
-    quizAnswers = {};
-    quizGraded = false;
+    if (!resp?.items?.length) { showToast('No items generated — ingest documents first.'); return; }
+    quizItems = resp.items; quizAnswers = {}; quizGraded = false;
     renderQuiz();
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Generate Quiz';
-  }
+  } finally { btn.disabled = false; btn.textContent = 'Generate Quiz'; }
 }
 
 function resetQuizUI() {
@@ -1530,78 +844,45 @@ function renderQuiz() {
   document.getElementById('quiz-submit-btn').style.display = 'block';
   document.getElementById('quiz-submit-bar').classList.add('visible');
   document.getElementById('score-display').style.display = 'none';
-
   const topic = document.getElementById('quiz-topic').value.trim();
   document.getElementById('quiz-title').textContent = topic || 'General Quiz';
   document.getElementById('quiz-count').textContent = `${quizItems.length} question${quizItems.length !== 1 ? 's' : ''}`;
-
   const list = document.getElementById('question-list');
-  list.innerHTML = quizItems.map((item, i) => buildQuestionCard(item, i)).join('');
-
-  list.querySelectorAll('.option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      if (quizGraded) return;
-      const card = opt.closest('.question-card');
-      const idx = parseInt(card.dataset.idx);
-      const val = opt.dataset.val;
-      quizAnswers[quizItems[idx].id] = val;
-      card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-      card.classList.add('answered');
-    });
-  });
-
-  list.querySelectorAll('.text-answer').forEach(inp => {
-    inp.addEventListener('input', () => {
-      const card = inp.closest('.question-card');
-      const idx = parseInt(card.dataset.idx);
-      quizAnswers[quizItems[idx].id] = inp.value;
-    });
-  });
-}
-
-function buildQuestionCard(item, i) {
-  const diff = item.difficulty || 'medium';
-  const qtype = item.quiz_type || 'multiple_choice';
-  const opts = item.options || [];
-  const letters = ['A', 'B', 'C', 'D', 'E'];
-
-  let answerHtml = '';
-  if (['multiple_choice', 'true_false', 'scenario'].includes(qtype) && opts.length) {
-    answerHtml = `<div class="options">${opts.map((o, j) => `
-      <div class="option" data-val="${escAttr(o)}">
-        <span class="option-letter">${letters[j] || j+1}</span>
-        <span class="option-text">${escHtml(o)}</span>
-      </div>`).join('')}</div>`;
-  } else {
-    answerHtml = `<input class="text-answer" type="text" placeholder="Type your answer…">`;
-  }
-
-  return `
-    <div class="question-card" data-idx="${i}" data-id="${escAttr(item.id)}">
-      <div class="question-meta">
-        <span class="question-num">Q${String(i+1).padStart(2,'0')}</span>
-        <span class="question-difficulty difficulty-${diff}">${diff}</span>
-      </div>
-      <div class="question-text">${escHtml(item.question)}</div>
-      ${answerHtml}
-      <div class="result-box" id="result-${i}">
-        <div class="result-status"></div>
-        <div class="result-correct-answer"></div>
-        <div class="result-explanation"></div>
-      </div>
+  list.innerHTML = quizItems.map((item, i) => {
+    const diff = item.difficulty || 'medium';
+    const qtype = item.quiz_type || 'multiple_choice';
+    const opts = item.options || [];
+    const letters = ['A','B','C','D','E'];
+    const ansHtml = (['multiple_choice','true_false','scenario'].includes(qtype) && opts.length)
+      ? `<div class="options">${opts.map((o,j) => `<div class="option" data-val="${escA(o)}"><span class="option-letter">${letters[j]||j+1}</span><span class="option-text">${esc(o)}</span></div>`).join('')}</div>`
+      : `<input class="text-answer" type="text" placeholder="Type your answer…">`;
+    return `<div class="question-card" data-idx="${i}" data-id="${escA(item.id)}">
+      <div class="question-meta"><span class="question-num">Q${String(i+1).padStart(2,'0')}</span><span class="question-difficulty difficulty-${diff}">${diff}</span></div>
+      <div class="question-text">${esc(item.question)}</div>
+      ${ansHtml}
+      <div class="result-box" id="result-${i}"><div class="result-status"></div><div class="result-correct-answer"></div><div class="result-explanation"></div></div>
     </div>`;
+  }).join('');
+  list.querySelectorAll('.option').forEach(opt => opt.addEventListener('click', () => {
+    if (quizGraded) return;
+    const card = opt.closest('.question-card');
+    const idx = parseInt(card.dataset.idx);
+    quizAnswers[quizItems[idx].id] = opt.dataset.val;
+    card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    card.classList.add('answered');
+  }));
+  list.querySelectorAll('.text-answer').forEach(inp => inp.addEventListener('input', () => {
+    const card = inp.closest('.question-card');
+    quizAnswers[quizItems[parseInt(card.dataset.idx)].id] = inp.value;
+  }));
 }
 
 async function submitQuiz() {
   if (!quizItems.length || quizGraded) return;
   quizGraded = true;
-
-  const submitBtns = document.querySelectorAll('#quiz-submit-btn, #quiz-submit-inline');
-  submitBtns.forEach(b => { b.disabled = true; b.textContent = 'Grading…'; });
-
+  document.querySelectorAll('#quiz-submit-btn,#quiz-submit-inline').forEach(b => { b.disabled = true; b.textContent = 'Grading…'; });
   let correct = 0;
-
   for (let i = 0; i < quizItems.length; i++) {
     const item = quizItems[i];
     const answer = quizAnswers[item.id] || '';
@@ -1609,34 +890,25 @@ async function submitQuiz() {
       const result = await api('POST', '/quiz/attempt', { item_id: item.id, user_answer: answer });
       const card = document.querySelector(`.question-card[data-idx="${i}"]`);
       const resBox = document.getElementById(`result-${i}`);
-
       if (result.is_correct) {
         correct++;
         card.classList.add('correct');
-        // Mark correct option
-        card.querySelectorAll('.option').forEach(o => {
-          if (o.dataset.val === answer) o.classList.add('correct-ans');
-        });
+        card.querySelectorAll('.option').forEach(o => { if (o.dataset.val === answer) o.classList.add('correct-ans'); });
       } else {
         card.classList.add('wrong');
-        // Mark selected wrong, correct right
         card.querySelectorAll('.option').forEach(o => {
           if (o.dataset.val === answer) o.classList.add('wrong-ans');
           if (o.dataset.val === result.correct_answer) o.classList.add('correct-ans');
         });
       }
-
       resBox.classList.add('visible', result.is_correct ? 'correct-box' : 'wrong-box');
       resBox.querySelector('.result-status').className = `result-status ${result.is_correct ? 'correct' : 'wrong'}`;
       resBox.querySelector('.result-status').textContent = result.is_correct ? '✓ Correct' : '✗ Incorrect';
-      if (!result.is_correct) {
-        resBox.querySelector('.result-correct-answer').innerHTML = `Correct: <strong>${escHtml(result.correct_answer)}</strong>`;
-      }
+      if (!result.is_correct) resBox.querySelector('.result-correct-answer').innerHTML = `Correct: <strong>${esc(result.correct_answer)}</strong>`;
       resBox.querySelector('.result-explanation').textContent = result.explanation || '';
     } catch { /* continue */ }
   }
-
-  submitBtns.forEach(b => { b.disabled = true; b.textContent = 'Submitted'; });
+  document.querySelectorAll('#quiz-submit-btn,#quiz-submit-inline').forEach(b => { b.disabled = true; b.textContent = 'Submitted'; });
   document.getElementById('score-display').style.display = 'inline';
   document.getElementById('score-val').textContent = `${correct} / ${quizItems.length}`;
 }
@@ -1647,41 +919,24 @@ async function loadWeakAreas() {
   grid.innerHTML = `<div style="color:var(--text-3);font-size:13px;padding:20px 0">Loading…</div>`;
   const data = await api('GET', `/weak-areas/${currentSubject}`).catch(() => null);
   const areas = data?.weak_areas || [];
-
   if (!areas.length) {
-    grid.innerHTML = `
-      <div class="empty-state">
-        <div class="glyph">◈</div>
-        <h2>No data yet</h2>
-        <p>Take a quiz and submit answers to track weak areas.</p>
-      </div>`;
+    grid.innerHTML = `<div class="empty-state"><div class="glyph">◈</div><h2>No data yet</h2><p>Take a quiz and submit answers to track weak areas.</p></div>`;
     return;
   }
-
-  grid.innerHTML = areas.map((a, i) => {
+  grid.innerHTML = areas.map(a => {
     const pct = Math.round(a.accuracy * 100);
     const cls = pct < 40 ? 'low' : pct < 70 ? 'mid' : 'high';
-    const qs = (a.wrong_questions || []).map(q => `<div class="weak-q">${escHtml(q)}</div>`).join('');
-    return `
-      <div class="weak-card">
-        <div class="weak-card-top">
-          <span class="weak-concept">${escHtml(a.concept)}</span>
-          <span class="weak-accuracy ${cls}">${pct}%</span>
-        </div>
-        <div class="weak-bar-bg"><div class="weak-bar-fill ${cls}" style="width:${pct}%"></div></div>
-        <div class="weak-stats">${a.correct} correct of ${a.total} attempts</div>
-        ${qs ? `
-          <button class="weak-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'Hide examples':'Show examples'">Show examples</button>
-          <div class="weak-questions">${qs}</div>
-        ` : ''}
-      </div>`;
+    const qs = (a.wrong_questions || []).map(q => `<div class="weak-q">${esc(q)}</div>`).join('');
+    return `<div class="weak-card">
+      <div class="weak-card-top"><span class="weak-concept">${esc(a.concept)}</span><span class="weak-accuracy ${cls}">${pct}%</span></div>
+      <div class="weak-bar-bg"><div class="weak-bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <div class="weak-stats">${a.correct} correct of ${a.total} attempts</div>
+      ${qs ? `<button class="weak-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'Hide':'Show examples'">Show examples</button><div class="weak-questions">${qs}</div>` : ''}
+    </div>`;
   }).join('');
-
-  // Animate bars on next frame
   requestAnimationFrame(() => {
     document.querySelectorAll('.weak-bar-fill').forEach(b => {
-      const w = b.style.width;
-      b.style.width = '0%';
+      const w = b.style.width; b.style.width = '0%';
       requestAnimationFrame(() => { b.style.width = w; });
     });
   });
@@ -1691,68 +946,100 @@ async function loadWeakAreas() {
 document.getElementById('ingest-btn').addEventListener('click', async () => {
   if (!currentSubject) { showToast('Select a subject first'); return; }
   const btn = document.getElementById('ingest-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
   await api('POST', `/subjects/${currentSubject}/ingest`).catch(() => null);
-  btn.disabled = false;
-  btn.textContent = 'Re-index Subject';
+  btn.disabled = false; btn.textContent = 'Re-index';
   startIngestPoll();
 });
+
+// File upload
+const uploadZone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+
+fileInput.addEventListener('change', () => { if (fileInput.files.length) uploadFiles(fileInput.files); });
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+});
+
+async function uploadFiles(files) {
+  if (!currentSubject) { showToast('Select a subject first'); return; }
+  const fd = new FormData();
+  for (const f of files) fd.append('files', f);
+  uploadZone.classList.add('drag-over');
+  try {
+    const result = await apiUpload(`/subjects/${currentSubject}/files`, fd);
+    const saved = result.saved || [];
+    const errors = result.errors || [];
+    if (saved.length) showToast(`Saved: ${saved.join(', ')}`, 'ok');
+    if (errors.length) showToast(`Errors: ${errors.join('; ')}`);
+    loadDocsList();
+  } finally {
+    uploadZone.classList.remove('drag-over');
+    fileInput.value = '';
+  }
+}
 
 function startIngestPoll() {
   clearInterval(ingestPollTimer);
   ingestPollTimer = setInterval(async () => {
     const data = await api('GET', `/subjects/${currentSubject}/ingest/status`).catch(() => null);
-    const el = document.getElementById('ingest-status');
     if (!data) return;
+    const el = document.getElementById('ingest-status');
     const s = data.status;
     el.className = `ingest-status visible ${s}`;
-    if (s === 'running') {
-      el.innerHTML = `<span class="spinner"></span> Indexing documents…`;
-    } else if (s === 'done') {
-      el.innerHTML = `✓ Indexed ${data.total_chunks || 0} chunks from ${(data.files_processed || []).length} file(s).`;
+    if (s === 'running') { el.innerHTML = `<span class="spinner"></span> Indexing…`; }
+    else if (s === 'done') {
+      el.innerHTML = `✓ Indexed ${data.total_chunks||0} chunks from ${(data.files_processed||[]).length} file(s).`;
       clearInterval(ingestPollTimer);
       loadDocsList();
-    } else if (s === 'error') {
-      el.innerHTML = `Error: ${data.error || 'Unknown'}`;
-      clearInterval(ingestPollTimer);
-    } else {
-      el.className = 'ingest-status';
-    }
+    } else if (s === 'error') { el.innerHTML = `Error: ${data.error||'Unknown'}`; clearInterval(ingestPollTimer); }
+    else { el.className = 'ingest-status'; }
   }, 2000);
 }
 
 async function loadDocsPage() {
-  const sub = document.querySelector(`.subject-item[data-id="${currentSubject}"]`);
-  const folder = sub?.dataset.folder || '—';
-  document.getElementById('docs-folder-path').textContent = folder;
-
-  // Check last ingest status
   const data = await api('GET', `/subjects/${currentSubject}/ingest/status`).catch(() => null);
-  const el = document.getElementById('ingest-status');
-  if (data && data.status === 'done') {
+  if (data?.status === 'done') {
+    const el = document.getElementById('ingest-status');
     el.className = 'ingest-status visible done';
-    el.innerHTML = `✓ Last index: ${data.total_chunks || 0} chunks from ${(data.files_processed || []).length} file(s).`;
+    el.innerHTML = `✓ Last index: ${data.total_chunks||0} chunks from ${(data.files_processed||[]).length} file(s).`;
   }
   loadDocsList();
 }
 
 async function loadDocsList() {
-  // We don't have a documents list endpoint, so show folder info
   const list = document.getElementById('docs-list');
-  list.innerHTML = `<div style="color:var(--text-3);font-size:12px;padding:8px 0">Document list comes from the ingestion database. Re-index to refresh.</div>`;
+  const data = await api('GET', `/subjects/${currentSubject}/documents`).catch(() => null);
+  if (!data?.files?.length) {
+    list.innerHTML = `<div style="color:var(--text-3);font-size:12px;padding:8px 0">No files yet. Upload files above, then click Re-index.</div>`;
+    return;
+  }
+  list.innerHTML = data.files.map(f => {
+    const ext = f.filename.split('.').pop().toLowerCase();
+    const kb = f.size_bytes < 1024 ? `${f.size_bytes} B` : f.size_bytes < 1048576 ? `${(f.size_bytes/1024).toFixed(1)} KB` : `${(f.size_bytes/1048576).toFixed(1)} MB`;
+    return `<div class="doc-row">
+      <span class="doc-type doc-type-${ext}">${ext}</span>
+      <span class="doc-name">${esc(f.filename)}</span>
+      <span class="doc-size">${kb}</span>
+      <span class="doc-status ${f.ingested ? 'ingested' : 'pending'}">${f.ingested ? '✓ indexed' : '· pending'}</span>
+    </div>`;
+  }).join('');
 }
 
 // ── Utilities ─────────────────────────────────
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(s) {
-  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function slugify(s) { return s.toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s-]+/g,'_').slice(0,64); }
 
 // ── Init ──────────────────────────────────────
 loadSubjects();
+// Pre-fetch model tiers for modal
+api('GET', '/subjects/models/tiers').then(t => { if (t) modelTiers = t; }).catch(() => {});
 </script>
 </body>
 </html>

@@ -22,10 +22,12 @@ services:
         condition: service_healthy
     environment:
       - OLLAMA_HOST=http://ollama:11434
+      - STUDYAPP_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-q4_K_M}
     entrypoint: >
       sh -c "
-        ollama pull mistral-nemo:12b &&
-        echo 'Model pull complete'
+        echo '==> Pulling model: '\"$STUDYAPP_MODEL\" &&
+        ollama pull \"$STUDYAPP_MODEL\" &&
+        echo '==> Model pull complete'
       "
     restart: "no"
 
@@ -61,6 +63,8 @@ services:
       - SQLITE_PATH=/data/app.db
       - DATA_DIR=/data
       - HF_HOME=/root/.cache/huggingface
+      - DEFAULT_CHAT_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-q4_K_M}
+      - DEFAULT_QUIZ_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-q4_K_M}
     depends_on:
       qdrant:
         condition: service_healthy

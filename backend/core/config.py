@@ -1,22 +1,54 @@
 import os
-import glob
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
 import yaml
 from pydantic import BaseModel
-from pydantic_settings import BaseSettings
+
+# ── Model catalogue ───────────────────────────────────────────────────────────
+MODEL_TIERS = {
+    "fast": {
+        "tier": "fast",
+        "label": "Fast · Llama 3.1 8B",
+        "model": "llama3.1:8b",
+        "description": "~4.7 GB — quick responses, lower VRAM requirement",
+    },
+    "balanced": {
+        "tier": "balanced",
+        "label": "Balanced · Mistral Nemo 12B (4-bit)",
+        "model": "mistral-nemo:12b-instruct-q4_K_M",
+        "description": "~7.1 GB — 4-bit quantised, good quality (recommended)",
+    },
+    "powerful": {
+        "tier": "powerful",
+        "label": "Powerful · Qwen 2.5 14B",
+        "model": "qwen2.5:14b",
+        "description": "~8.7 GB — best quality, needs more VRAM",
+    },
+}
+
+DEFAULT_MODEL_TIER = "balanced"
+DEFAULT_MODEL = MODEL_TIERS[DEFAULT_MODEL_TIER]["model"]
 
 
+def tier_for_model(model: str) -> str:
+    for tier, info in MODEL_TIERS.items():
+        if info["model"] == model:
+            return tier
+    return "balanced"
+
+
+# ── Config models ─────────────────────────────────────────────────────────────
 class AppConfig(BaseModel):
     qdrant_url: str = "http://qdrant:6333"
     ollama_url: str = "http://ollama:11434"
     sqlite_path: str = "/data/app.db"
     data_dir: str = "/data"
     default_embedding_model: str = "paraphrase-multilingual-mpnet-base-v2"
-    default_chat_model: str = "mistral-nemo:12b"
-    default_quiz_model: str = "mistral-nemo:12b"
+    default_chat_model: str = DEFAULT_MODEL
+    default_quiz_model: str = DEFAULT_MODEL
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
     retrieval_top_k: int = 5
@@ -32,26 +64,27 @@ class SubjectConfig(BaseModel):
     output_language: str = "en"
     input_folder: str
     vector_collection: str
-    chat_model: str = "mistral-nemo:12b"
-    quiz_model: str = "mistral-nemo:12b"
+    chat_model: str = DEFAULT_MODEL
+    quiz_model: str = DEFAULT_MODEL
     embedding_model: str = "paraphrase-multilingual-mpnet-base-v2"
     config_path: Optional[str] = None
 
 
+# ── Loaders ───────────────────────────────────────────────────────────────────
 @lru_cache(maxsize=1)
 def get_app_config() -> AppConfig:
     config_path = Path(__file__).parent.parent.parent / "config" / "app_config.yaml"
+    data: dict = {}
     if config_path.exists():
         with open(config_path) as f:
             data = yaml.safe_load(f) or {}
-    else:
-        data = {}
-    # Environment variables override yaml
     overrides = {
         "qdrant_url": os.getenv("QDRANT_URL"),
         "ollama_url": os.getenv("OLLAMA_URL"),
         "sqlite_path": os.getenv("SQLITE_PATH"),
         "data_dir": os.getenv("DATA_DIR"),
+        "default_chat_model": os.getenv("DEFAULT_CHAT_MODEL"),
+        "default_quiz_model": os.getenv("DEFAULT_QUIZ_MODEL"),
     }
     for k, v in overrides.items():
         if v:
@@ -60,13 +93,11 @@ def get_app_config() -> AppConfig:
 
 
 def get_data_dir() -> Path:
-    cfg = get_app_config()
-    return Path(cfg.data_dir)
+    return Path(get_app_config().data_dir)
 
 
 def list_subject_configs() -> list[SubjectConfig]:
-    data_dir = get_data_dir()
-    subjects_dir = data_dir / "subjects"
+    subjects_dir = get_data_dir() / "subjects"
     if not subjects_dir.exists():
         return []
     configs = []
@@ -77,9 +108,8 @@ def list_subject_configs() -> list[SubjectConfig]:
             if not data:
                 continue
             cfg = SubjectConfig(**data, config_path=str(config_file))
-            # Resolve input_folder relative to data_dir if not absolute
             if not Path(cfg.input_folder).is_absolute():
-                cfg.input_folder = str(data_dir / cfg.input_folder.lstrip("data/"))
+                cfg.input_folder = str(get_data_dir() / cfg.input_folder.lstrip("data/"))
             configs.append(cfg)
         except Exception as e:
             print(f"[config] Failed to load {config_file}: {e}")
@@ -91,3 +121,46 @@ def get_subject_config(subject_id: str) -> Optional[SubjectConfig]:
         if cfg.subject_id == subject_id:
             return cfg
     return None
+
+
+def slugify(text: str) -> str:
+    text = text.lower().strip()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[\s-]+", "_", text)
+    return text[:64]
+
+
+def create_subject_on_disk(
+    subject_id: str,
+    display_name: str,
+    source_language: str = "auto",
+    output_language: str = "en",
+    chat_model: str = DEFAULT_MODEL,
+    quiz_model: str = DEFAULT_MODEL,
+) -> SubjectConfig:
+    data_dir = get_data_dir()
+    subject_dir = data_dir / "subjects" / subject_id
+    raw_dir = subject_dir / "raw"
+    processed_dir = subject_dir / "processed"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    processed_dir.mkdir(parents=True, exist_ok=True)
+
+    input_folder = str(raw_dir)
+    vector_collection = f"subject_{subject_id}"
+    config_path = subject_dir / "config.yaml"
+
+    cfg_data = {
+        "subject_id": subject_id,
+        "display_name": display_name,
+        "source_language": source_language,
+        "output_language": output_language,
+        "input_folder": input_folder,
+        "vector_collection": vector_collection,
+        "chat_model": chat_model,
+        "quiz_model": quiz_model,
+        "embedding_model": "paraphrase-multilingual-mpnet-base-v2",
+    }
+    with open(config_path, "w") as f:
+        yaml.dump(cfg_data, f, default_flow_style=False, allow_unicode=True)
+
+    return SubjectConfig(**cfg_data, config_path=str(config_path))
