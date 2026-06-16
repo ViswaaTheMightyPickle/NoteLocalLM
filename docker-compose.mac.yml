@@ -1,0 +1,25 @@
+# Overlay for macOS (Apple Silicon or Intel).
+# Ollama runs natively on the Mac host using Metal GPU acceleration.
+# The backend container reaches it via host.docker.internal.
+#
+# Before first run:
+#   brew install ollama        # or download from https://ollama.com
+#   ollama serve               # start in a separate terminal
+#   ollama pull mistral-nemo:12b
+#
+# Then: docker compose -f docker-compose.yml -f docker-compose.mac.yml up
+# Or: ./start.sh  (auto-detected on macOS)
+services:
+  ollama:
+    # Disable the containerised Ollama — use the native Mac install instead.
+    profiles: [_disabled]
+
+  ollama-init:
+    profiles: [_disabled]
+
+  backend:
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434
+    depends_on:
+      qdrant:
+        condition: service_healthy

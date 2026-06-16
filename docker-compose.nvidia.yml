@@ -1,0 +1,12 @@
+# Overlay for Windows/Linux machines with an NVIDIA GPU.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.nvidia.yml up
+# Or: ./start.sh  (auto-detected on non-Mac systems with nvidia-smi)
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

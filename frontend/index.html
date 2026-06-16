@@ -10,6 +10,14 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Safari / iOS resets */
+input, textarea, select, button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+textarea { resize: none; }
+select { background-image: none; }
+
 :root {
   --bg:           #0E1018;
   --surface:      #161924;
@@ -468,7 +476,7 @@ html, body {
   color: var(--text-3);
 }
 .lang-select {
-  background: none;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text-2);
@@ -479,6 +487,7 @@ html, body {
   outline: none;
 }
 .lang-select:focus { border-color: var(--gold); }
+.lang-select option { background: var(--surface); color: var(--text-1); }
 .clear-chat {
   background: none;
   border: none;
@@ -538,6 +547,7 @@ html, body {
 .form-select:focus { border-color: var(--gold); }
 .form-input::placeholder { color: var(--text-3); }
 .form-select { cursor: pointer; }
+.form-select option { background: var(--surface); color: var(--text-1); }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
