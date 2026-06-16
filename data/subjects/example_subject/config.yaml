@@ -1,0 +1,9 @@
+subject_id: example_subject
+display_name: Example Subject
+source_language: auto
+output_language: en
+input_folder: data/subjects/example_subject/raw
+vector_collection: subject_example_subject
+chat_model: mistral-nemo:12b
+quiz_model: mistral-nemo:12b
+embedding_model: paraphrase-multilingual-mpnet-base-v2
