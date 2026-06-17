@@ -33,6 +33,19 @@ You can also choose the model tier **per subject** when creating a new subject i
 
 ---
 
+## Context Window & Runtime Headroom
+
+The backend requests a **16k token context window** by default (`LLM_CONTEXT_TOKENS=16384`) and keeps the loaded model alive for 30 minutes (`LLM_KEEP_ALIVE=30m`). Override either value in `.env` if your machine needs a smaller or larger window:
+
+```env
+LLM_CONTEXT_TOKENS=16384
+LLM_KEEP_ALIVE=30m
+```
+
+For Docker GPU runs, the Ollama container defaults to `OLLAMA_NUM_PARALLEL=1`. This prevents multiple concurrent model runners from multiplying KV-cache memory and eating the VRAM/RAM headroom needed for the larger context window. If Docker Desktop / WSL2 still reports more usable VRAM than Ollama can actually allocate, reserve headroom with `OLLAMA_GPU_OVERHEAD`.
+
+---
+
 ## Platform Support
 
 ### Windows / Linux (NVIDIA GPU)
@@ -73,6 +86,11 @@ brew install ollama
 4. You land on the Documents tab — upload PDF, CSV, TXT, or MD files by clicking or dragging
 5. Click **Re-index** to process the files
 6. Switch to **Study Chat** to start asking questions
+
+### Editing and Deleting
+- Open **Documents** for the selected subject and click **Edit Subject** to change the display name, languages, or model tier. The subject ID stays stable so existing folders, sessions, and vector collections remain attached.
+- Click **Delete Subject** to remove the subject folder, vector collection, and local study history for that subject.
+- Use **Delete** beside an uploaded document to remove that file and its indexed vectors without deleting the whole subject.
 
 ### Manually
 Create a folder under `data/subjects/` with a `config.yaml`:
@@ -128,7 +146,7 @@ All services run via `docker compose`. Data persists in Docker volumes and `./da
 | **Study Chat** | Ask questions; answers grounded in your documents with source citations |
 | **Quiz** | Generate multiple-choice, true/false, short-answer, fill-blank, flashcard, or mixed quizzes |
 | **Weak Areas** | Tracks which concepts you get wrong most often across quiz attempts |
-| **Documents** | Upload files, trigger re-indexing, see what's been ingested |
+| **Documents** | Upload/delete files, edit/delete subjects, trigger re-indexing, see what's been ingested |
 
 ---
 

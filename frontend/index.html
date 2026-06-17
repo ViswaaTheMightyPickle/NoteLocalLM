@@ -258,6 +258,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text-1); font-fam
 .doc-status.ingested { color: var(--teal); }
 .doc-status.pending { color: var(--text-3); }
 .doc-size { font-size: 11px; color: var(--text-3); flex-shrink: 0; font-family: var(--f-mono); }
+.doc-delete { padding: 4px 8px; font-size: 11px; }
 
 /* ── Modal ──────────────────────────────────────────────── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(4px); }
@@ -470,6 +471,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text-1); font-fam
           <p>Upload files and index them for this subject.</p>
         </div>
         <div class="docs-header-actions">
+          <button class="btn btn-ghost btn-sm" id="edit-subject-btn">Edit Subject</button>
+          <button class="btn btn-danger btn-sm" id="delete-subject-btn">Delete Subject</button>
           <button class="btn btn-ghost btn-sm" id="ingest-btn">Re-index</button>
         </div>
       </div>
@@ -558,11 +561,14 @@ const BACKEND = (() => {
 // ── State ─────────────────────────────────────
 let currentSubject = null;
 let currentSubjectName = '';
+let currentSubjectData = null;
+let subjectsCache = [];
 let sessionId = null;
 let quizItems = [], quizAnswers = {}, quizGraded = false;
 let ingestPollTimer = null;
 let modelTiers = [];
 let selectedTier = 'balanced';
+let modalMode = 'create';
 
 // ── API ───────────────────────────────────────
 async function api(method, path, body) {
@@ -613,19 +619,22 @@ document.querySelectorAll('.nav-item').forEach(el => {
 // ── Subjects ──────────────────────────────────
 async function loadSubjects(autoSelectId) {
   const data = await api('GET', '/subjects').catch(() => []);
+  subjectsCache = data || [];
   const list = document.getElementById('subject-list');
   if (!data || !data.length) {
+    currentSubject = null;
+    currentSubjectData = null;
     list.innerHTML = `<div style="padding:10px 8px;font-size:12px;color:var(--text-3)">No subjects yet. Click + to create one.</div>`;
     return;
   }
   list.innerHTML = data.map(s => `
-    <div class="subject-item" data-id="${esc(s.subject_id)}" data-name="${esc(s.display_name)}" data-folder="${esc(s.input_folder||'')}">
+    <div class="subject-item" data-id="${esc(s.subject_id)}">
       <div class="subject-dot"></div>
       <span>${esc(s.display_name)}</span>
     </div>`).join('');
   const items = [...list.querySelectorAll('.subject-item')];
   items.forEach(el => {
-    el.addEventListener('click', () => selectSubject(el.dataset.id, el.dataset.name, el.dataset.folder));
+    el.addEventListener('click', () => selectSubject(el.dataset.id));
   });
   // Match on dataset rather than building a CSS selector from an arbitrary id
   // (ids from manually-edited configs may contain selector metacharacters).
@@ -635,39 +644,51 @@ async function loadSubjects(autoSelectId) {
   if (target) target.click();
 }
 
-function selectSubject(id, name, folder) {
+function selectSubject(id) {
   if (currentSubject === id) return;
+  const subject = subjectsCache.find(s => s.subject_id === id);
+  if (!subject) return;
   currentSubject = id;
-  currentSubjectName = name;
+  currentSubjectData = subject;
+  currentSubjectName = subject.display_name;
   sessionId = null;
   document.querySelectorAll('.subject-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
-  document.getElementById('topbar-subject').textContent = name;
-  document.getElementById('upload-hint').textContent = folder || id;
+  document.getElementById('topbar-subject').textContent = subject.display_name;
+  document.getElementById('upload-hint').textContent = subject.input_folder || id;
   clearChatUI();
   quizItems = []; quizAnswers = {}; quizGraded = false;
   resetQuizUI();
 }
 
 // ── New Subject Modal ─────────────────────────
-document.getElementById('add-subject-btn').addEventListener('click', openModal);
+document.getElementById('add-subject-btn').addEventListener('click', () => openModal('create'));
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal-cancel').addEventListener('click', closeModal);
 document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-document.getElementById('modal-create').addEventListener('click', createSubject);
+document.getElementById('modal-create').addEventListener('click', saveSubject);
 
 document.getElementById('new-display-name').addEventListener('input', e => {
   const slug = slugify(e.target.value);
   document.getElementById('new-id-preview').textContent = slug ? `ID: ${slug}` : '';
 });
 
-async function openModal() {
+async function openModal(mode = 'create') {
+  modalMode = mode;
   if (!modelTiers.length) {
     const tiers = await api('GET', '/subjects/models/tiers').catch(() => []);
     modelTiers = tiers;
   }
+  const editing = mode === 'edit';
+  const subject = editing ? currentSubjectData : null;
+  if (editing && !subject) { showToast('Select a subject first'); return; }
+  selectedTier = tierForModel(subject?.chat_model) || 'balanced';
   renderTierGroup();
-  document.getElementById('new-display-name').value = '';
-  document.getElementById('new-id-preview').textContent = '';
+  document.getElementById('modal-title-text').textContent = editing ? 'Edit Subject' : 'New Subject';
+  document.getElementById('modal-create').textContent = editing ? 'Save Changes' : 'Create Subject';
+  document.getElementById('new-display-name').value = subject?.display_name || '';
+  document.getElementById('new-src-lang').value = subject?.source_language || 'auto';
+  document.getElementById('new-out-lang').value = subject?.output_language || 'en';
+  document.getElementById('new-id-preview').textContent = editing ? `ID: ${subject.subject_id}` : '';
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(() => document.getElementById('new-display-name').focus(), 60);
 }
@@ -698,7 +719,11 @@ function renderTierGroup() {
   });
 }
 
-async function createSubject() {
+function tierForModel(model) {
+  return modelTiers.find(t => t.model === model)?.tier || 'balanced';
+}
+
+async function saveSubject() {
   const name = document.getElementById('new-display-name').value.trim();
   if (!name) { document.getElementById('new-display-name').focus(); return; }
 
@@ -710,23 +735,28 @@ async function createSubject() {
   btn.innerHTML = '<span class="spinner"></span>';
 
   try {
-    const result = await api('POST', '/subjects', {
+    const payload = {
       display_name: name,
       source_language: document.getElementById('new-src-lang').value,
       output_language: document.getElementById('new-out-lang').value,
       chat_model: model,
       quiz_model: model,
-    });
+    };
+    const result = modalMode === 'edit'
+      ? await api('PATCH', `/subjects/${currentSubject}`, payload)
+      : await api('POST', '/subjects', payload);
     closeModal();
-    showToast(`"${name}" created`, 'ok');
+    showToast(`"${name}" ${modalMode === 'edit' ? 'updated' : 'created'}`, 'ok');
     await loadSubjects(result.subject_id);
-    // Switch to Documents tab so they can immediately upload files
-    document.querySelector('.nav-item[data-page="docs"]').click();
+    if (modalMode === 'create') {
+      // Switch to Documents tab so they can immediately upload files
+      document.querySelector('.nav-item[data-page="docs"]').click();
+    }
   } catch {
     // error already toasted
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Create Subject';
+    btn.textContent = modalMode === 'edit' ? 'Save Changes' : 'Create Subject';
   }
 }
 
@@ -950,6 +980,9 @@ async function loadWeakAreas() {
 }
 
 // ── Documents ─────────────────────────────────
+document.getElementById('edit-subject-btn').addEventListener('click', () => openModal('edit'));
+document.getElementById('delete-subject-btn').addEventListener('click', deleteCurrentSubject);
+
 document.getElementById('ingest-btn').addEventListener('click', async () => {
   if (!currentSubject) { showToast('Select a subject first'); return; }
   const btn = document.getElementById('ingest-btn');
@@ -958,6 +991,21 @@ document.getElementById('ingest-btn').addEventListener('click', async () => {
   btn.disabled = false; btn.textContent = 'Re-index';
   startIngestPoll();
 });
+
+async function deleteCurrentSubject() {
+  if (!currentSubject) { showToast('Select a subject first'); return; }
+  const name = currentSubjectName || currentSubject;
+  if (!confirm(`Delete "${name}" and its files, index, and local study history? This cannot be undone.`)) return;
+  await api('DELETE', `/subjects/${currentSubject}`).catch(() => null);
+  showToast(`"${name}" deleted`, 'ok');
+  currentSubject = null;
+  currentSubjectData = null;
+  currentSubjectName = '';
+  document.getElementById('topbar-subject').textContent = '—';
+  document.getElementById('upload-hint').textContent = 'Select a subject to upload';
+  document.getElementById('docs-list').innerHTML = '';
+  await loadSubjects();
+}
 
 // File upload
 const uploadZone = document.getElementById('upload-zone');
@@ -1038,9 +1086,21 @@ async function loadDocsList() {
       <span class="doc-type doc-type-${ext}">${ext}</span>
       <span class="doc-name">${esc(f.filename)}</span>
       <span class="doc-size">${kb}</span>
+      <button class="btn btn-danger doc-delete" data-filename="${escA(f.filename)}">Delete</button>
       <span class="doc-status ${f.ingested ? 'ingested' : 'pending'}">${f.ingested ? '✓ indexed' : '· pending'}</span>
     </div>`;
   }).join('');
+  list.querySelectorAll('.doc-delete').forEach(btn => {
+    btn.addEventListener('click', () => deleteDocument(btn.dataset.filename));
+  });
+}
+
+async function deleteDocument(filename) {
+  if (!currentSubject) { showToast('Select a subject first'); return; }
+  if (!confirm(`Delete "${filename}" from this subject?`)) return;
+  await api('DELETE', `/subjects/${currentSubject}/documents/${encodeURIComponent(filename)}`).catch(() => null);
+  showToast(`Deleted ${filename}`, 'ok');
+  loadDocsList();
 }
 
 // ── Utilities ─────────────────────────────────

@@ -19,7 +19,8 @@ def chat(
     payload = {
         "model": model,
         "stream": False,
-        "options": {"temperature": temperature, "num_ctx": 8192},
+        "keep_alive": cfg.llm_keep_alive,
+        "options": {"temperature": temperature, "num_ctx": cfg.llm_context_tokens},
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},

@@ -37,6 +37,17 @@ def test_create_subject_accepts_safe_id():
     assert cfg.input_folder.endswith("subjects/history_101/raw")
 
 
+def test_llm_context_tokens_env_override():
+    import os
+    os.environ["LLM_CONTEXT_TOKENS"] = "32768"
+    config = _fresh_config(tempfile.mkdtemp())
+    try:
+        assert config.get_app_config().llm_context_tokens == 32768
+    finally:
+        os.environ.pop("LLM_CONTEXT_TOKENS", None)
+        config.get_app_config.cache_clear()
+
+
 def test_input_folder_prefix_strip_is_literal():
     # The old lstrip("data/") bug ate any leading d/a/t/ chars. removeprefix
     # must only strip the literal "data/" prefix.

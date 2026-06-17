@@ -5,6 +5,7 @@ from pathlib import Path
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+import yaml
 
 from backend.core.config import (
     MODEL_TIERS,
@@ -59,6 +60,14 @@ class CreateSubjectRequest(BaseModel):
     quiz_model: str = ""
 
 
+class UpdateSubjectRequest(BaseModel):
+    display_name: str = ""
+    source_language: str = ""
+    output_language: str = ""
+    chat_model: str = ""
+    quiz_model: str = ""
+
+
 @router.post("")
 def create_subject(req: CreateSubjectRequest):
     from backend.core.config import DEFAULT_MODEL
@@ -93,6 +102,40 @@ def create_subject(req: CreateSubjectRequest):
 
 
 # ── Upload files ──────────────────────────────────────────────────────────────
+@router.patch("/{subject_id}")
+def update_subject(subject_id: str, req: UpdateSubjectRequest, db: Session = Depends(get_db)):
+    cfg = get_subject_config(subject_id)
+    if not cfg:
+        raise HTTPException(status_code=404, detail=f"Subject '{subject_id}' not found")
+
+    data = cfg.model_dump(exclude={"config_path"})
+    for field in ("display_name", "source_language", "output_language", "chat_model", "quiz_model"):
+        value = getattr(req, field)
+        if value:
+            data[field] = value.strip()
+
+    config_path = Path(cfg.config_path) if cfg.config_path else Path(cfg.input_folder).parent / "config.yaml"
+    with open(config_path, "w") as f:
+        yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
+
+    from backend.core.models import Subject
+    row = db.query(Subject).filter_by(subject_id=subject_id).first()
+    if row:
+        row.display_name = data["display_name"]
+        row.config_path = str(config_path)
+        db.commit()
+
+    return {
+        "subject_id": subject_id,
+        "display_name": data["display_name"],
+        "source_language": data["source_language"],
+        "output_language": data["output_language"],
+        "input_folder": data["input_folder"],
+        "chat_model": data["chat_model"],
+        "quiz_model": data["quiz_model"],
+    }
+
+
 @router.post("/{subject_id}/files")
 async def upload_files(subject_id: str, files: list[UploadFile] = File(...)):
     cfg = get_subject_config(subject_id)
@@ -167,6 +210,37 @@ def list_documents(subject_id: str, db: Session = Depends(get_db)):
     }
 
 
+@router.delete("/{subject_id}/documents/{filename:path}")
+def delete_document(subject_id: str, filename: str, db: Session = Depends(get_db)):
+    cfg = get_subject_config(subject_id)
+    if not cfg:
+        raise HTTPException(status_code=404, detail=f"Subject '{subject_id}' not found")
+    if "/" in filename or "\\" in filename:
+        raise HTTPException(status_code=400, detail="Filename must not contain path separators")
+
+    safe_name = safe_filename(filename)
+    raw_dir = Path(cfg.input_folder).resolve()
+    dest = (raw_dir / safe_name).resolve()
+    if dest.parent != raw_dir:
+        raise HTTPException(status_code=400, detail="Unsafe filename")
+
+    if dest.exists():
+        dest.unlink()
+
+    from backend.retrieval.retriever import get_qdrant_client, delete_document_points
+    try:
+        delete_document_points(get_qdrant_client(), cfg.vector_collection, subject_id, safe_name)
+    except Exception as e:
+        logger.warning(f"[delete] Could not delete vectors for {safe_name}: {e}")
+
+    doc = db.query(Document).filter_by(subject_id=subject_id, filename=safe_name).first()
+    if doc:
+        db.delete(doc)
+        db.commit()
+
+    return {"deleted": safe_name}
+
+
 # ── Delete subject ────────────────────────────────────────────────────────────
 @router.delete("/{subject_id}")
 def delete_subject(subject_id: str, db: Session = Depends(get_db)):
@@ -187,11 +261,13 @@ def delete_subject(subject_id: str, db: Session = Depends(get_db)):
     if subject_dir.exists():
         shutil.rmtree(subject_dir)
 
-    from backend.core.models import Subject
+    from backend.core.models import QuizItem, Subject
+    for item in db.query(QuizItem).filter_by(subject_id=subject_id).all():
+        db.delete(item)
     row = db.query(Subject).filter_by(subject_id=subject_id).first()
     if row:
         db.delete(row)
-        db.commit()
+    db.commit()
 
     return {"deleted": subject_id}
 

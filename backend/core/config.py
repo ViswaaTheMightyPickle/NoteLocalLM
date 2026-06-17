@@ -54,6 +54,8 @@ class AppConfig(BaseModel):
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
     retrieval_top_k: int = 5
+    llm_context_tokens: int = 16384
+    llm_keep_alive: str = "30m"
     chunk_target_tokens: int = 700
     chunk_overlap_tokens: int = 100
     embed_batch_size: int = 32
@@ -87,6 +89,8 @@ def get_app_config() -> AppConfig:
         "data_dir": os.getenv("DATA_DIR"),
         "default_chat_model": os.getenv("DEFAULT_CHAT_MODEL"),
         "default_quiz_model": os.getenv("DEFAULT_QUIZ_MODEL"),
+        "llm_context_tokens": os.getenv("LLM_CONTEXT_TOKENS"),
+        "llm_keep_alive": os.getenv("LLM_KEEP_ALIVE"),
     }
     for k, v in overrides.items():
         if v:

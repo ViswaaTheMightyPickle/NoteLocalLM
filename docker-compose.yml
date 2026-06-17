@@ -36,6 +36,8 @@ services:
       - HF_HOME=/root/.cache/huggingface
       - DEFAULT_CHAT_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-2407-q4_K_M}
       - DEFAULT_QUIZ_MODEL=${STUDYAPP_MODEL:-mistral-nemo:12b-instruct-2407-q4_K_M}
+      - LLM_CONTEXT_TOKENS=${LLM_CONTEXT_TOKENS:-16384}
+      - LLM_KEEP_ALIVE=${LLM_KEEP_ALIVE:-30m}
     depends_on:
       qdrant:
         condition: service_healthy
